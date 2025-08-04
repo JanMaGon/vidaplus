@@ -1,0 +1,54 @@
+# Arquivos do sistema
+*.bak
+*.tmp
+*.log
+*.swp
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Arquivos do Composer
+/vendor/
+composer.lock
+
+# Cache e logs
+/writable/cache/*
+/writable/logs/*
+!/writable/index.html
+
+# Diretório de sessões e uploads (se configurado)
+/writable/session/*
+/writable/uploads/*
+!/writable/session/index.html
+!/writable/uploads/index.html
+
+# Configurações locais
+.env
+.env.*
+
+# IDEs e editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Sistema operacional
+*.bak
+*.tmp
+*.old
+
+# PHPUnit
+.phpunit.result.cache
+/tests/_support/_generated/
+
+# Cobertura de testes
+coverage/
+html-coverage/
+
+# Banco de dados temporário
+*.sqlite
+
+# Node (caso use frontend com npm/yarn)
+node_modules/
+package-lock.json
+yarn.lock
