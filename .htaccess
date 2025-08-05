@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Evita loop de redirecionamento
+RewriteCond %{REQUEST_URI} !^/public/
+
+# Redireciona tudo para a pasta public
+RewriteRule ^(.*)$ public/$1 [L]
