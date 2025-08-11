@@ -13,8 +13,8 @@ composer.lock
 
 # Cache, logs e debugar
 /writable/debugbar/*
-/writable/cache/*
-/writable/logs/*
+#/writable/cache/*
+#/writable/logs/*
 !/writable/index.html
 
 # Diretório de sessões e uploads (se configurado)
