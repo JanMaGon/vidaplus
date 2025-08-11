@@ -11,9 +11,10 @@ ehthumbs.db
 /vendor/
 composer.lock
 
-# Cache e logs
-/writable/cache/*
-/writable/logs/*
+# Cache, logs e debugar
+/writable/debugbar/*
+#/writable/cache/*
+#/writable/logs/*
 !/writable/index.html
 
 # Diretório de sessões e uploads (se configurado)
