@@ -11,7 +11,6 @@
 - [Pré-requisitos](#pré-requisitos)  
 - [Instalação](#instalação)  
 - [Configuração](#configuração)  
-- [Uso](#uso)  
 - [Estrutura Importante](#estrutura-importante)  
 - [Considerações Finais](#considerações-finais)  
 
@@ -38,7 +37,7 @@ Antes de rodar o projeto, certifique-se de ter instalado:
 
 1. Clone o repositório:  
    ```bash
-   git clone https://github.com/seuusuario/vidaplus.git
+   git clone https://github.com/JanMaGon/vidaplus.git
    cd vidaplus
 
 2. Instale as dependências via Composer:
