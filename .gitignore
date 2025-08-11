@@ -11,7 +11,8 @@ ehthumbs.db
 /vendor/
 composer.lock
 
-# Cache e logs
+# Cache, logs e debugar
+/writable/debugbar/*
 /writable/cache/*
 /writable/logs/*
 !/writable/index.html
