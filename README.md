@@ -53,6 +53,7 @@ Antes de rodar o projeto, certifique-se de ter instalado:
 ## Configuração
 
 1. Abra o arquivo .env e configure as variáveis do banco de dados:
+    ```dotenv
    database.default.hostname = localhost
    database.default.database = nome_do_banco
    database.default.username = root
@@ -60,7 +61,7 @@ Antes de rodar o projeto, certifique-se de ter instalado:
    database.default.DBDriver = MySQLi
    database.default.port = 3306
 
-2. Garanta que as pastas dentro de writable/ estejam criadas com permissões de escrita:
+3. Garanta que as pastas dentro de writable/ estejam criadas com permissões de escrita:
   - writable/cache
   - writable/logs
   - writable/session
