@@ -23,7 +23,6 @@ class Usuarios extends BaseController
 			'nome',
 			'email',
 			'ativo',
-			'imagem',
 		];
 
 		$usuarios = $this->usuarioModel->select($atributos)
@@ -36,7 +35,6 @@ class Usuarios extends BaseController
 			// Receberá o array de objetos de usuários
 			$data[] = [
 				'id' => (int) $usuario->id,
-				'imagem' => $usuario->imagem,
 				'nome' => esc($usuario->nome),
 				'email' => esc($usuario->email),
 				'ativo' => (bool) $usuario->ativo,

@@ -17,13 +17,16 @@ class UsuarioFakerSeeder extends Seeder
 
         $usuariosPush = [];
 
+        // Cria um password_hash para a senha
+        $passwordHash = password_hash('123456', PASSWORD_DEFAULT);
+
         for ($i = 0; $i < $criarQuantosUsuarios; $i++) {
             
             array_push($usuariosPush, [
                 'nome' => $faker->unique()->name(),
                 'email' => $faker->unique()->email(),
-                'password_hash' => '123456',
-                'ativo' => true,
+                'password_hash' => $passwordHash,
+                'ativo' => $faker->numberBetween(0, 1),
             ]);
 
         }

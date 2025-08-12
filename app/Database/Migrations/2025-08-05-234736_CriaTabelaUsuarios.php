@@ -38,13 +38,7 @@ class CriaTabelaUsuarios extends Migration
                 'type'    => 'DATETIME',
                 'null'    => true,
                 'default' => null,
-            ],                      
-            'imagem' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '240',
-                'null'       => true,
-                'default'    => null,
-            ],                      
+            ],                     
             'ativo' => [
                 'type' => 'BOOLEAN',
                 'null' => false,
