@@ -71,7 +71,7 @@ Antes de rodar o projeto, certifique-se de ter instalado:
    ```bash
    php spark db:create vidaplus
    php spark migrate
-   php spark db:seed NomeDoSeeder
+   php spark db:seed UsuarioFakerSeeder
 
 ---
 
