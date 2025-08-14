@@ -10,6 +10,8 @@ $routes->get('/', 'Home::index');
 // Rotas API Usuários
 // Listar todos os usuários
 $routes->get('api/usuarios', 'Usuarios::index');
+// Usuários deletados (soft delete)
+$routes->get('api/usuarios/deletados', 'Usuarios::trash');
 // Exibir um usuário específico
 $routes->get('api/usuarios/(:num)', 'Usuarios::exibir/$1');
 // Criar usuário (POST)

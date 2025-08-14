@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Entities\Usuario;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Usuarios extends BaseController
@@ -79,11 +80,30 @@ class Usuarios extends BaseController
 			return $dados; // JSON inválido, já retorna a resposta 400
 		}
 
-		return $this->response->setJSON([
-			'status' => 'OK',
-			'mensagem' => 'Usuário recebido com sucesso',
-			'dados_recebidos' => $dados
-		]);
+		// Cria um novo objeto da Entidade Usuario
+		$usuario = new Usuario($dados);
+
+		if ($this->usuarioModel->protect(false)->save($usuario)) {
+
+			// Retornamos junto com o status o último ID inserido
+			// Ou seja, o ID do usuário recém-criado
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Usuário criado com sucesso",
+					'id' => $this->usuarioModel->getInsertID()
+				]);
+		}
+
+		// Alguma validação falhou
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao criar o usuário',
+				'erros_model' => $this->usuarioModel->errors()
+			]);
 	}
 
 
@@ -101,13 +121,22 @@ class Usuarios extends BaseController
 			return $usuario; // Se já for a resposta 404, retorna direto
 		}
 
+		// Se informou senha mas não confirmou, retorna erro
+		if (!empty($dados['password']) && empty($dados['password_confirmation'])) {
+			return $this->response
+				->setStatusCode(400)
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Por favor confirme a sua senha.'
+				]);
+		}
+
 		// Senão for informado, não atualiza a senha
 		// Se não fizer desta forma, o hashPassword do Model fará o hash de uma string vazia
 		if (empty($dados['password'])) {
 
 			unset($dados['password']);
 			unset($dados['password_confirmation']);
-
 		}
 
 		// Garante que a ID usada na atualização é a da URL
@@ -131,8 +160,7 @@ class Usuarios extends BaseController
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Usuário {$id} atualizado com sucesso",
-					'dados_recebidos' => $dados
+					'mensagem' => "Usuário {$id} atualizado com sucesso"
 				]);
 		}
 
@@ -148,13 +176,66 @@ class Usuarios extends BaseController
 
 	public function remover($id = null)
 	{
+
+		$usuario = $this->buscaUsuarioOu404($id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		if ($this->usuarioModel->delete($usuario->id)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Usuário excluído com sucesso"
+				]);
+		}
+
 		return $this->response
-			->setStatusCode(200)
+			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
-				'status' => 'OK',
-				'mensagem' => "Usuário {$id} excluído com sucesso"
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar excluir o usuário'
 			]);
 	}
+
+	public function trash()
+	{
+		$atributos = [
+			'id',
+			'nome',
+			'email',
+			'ativo',
+		];
+
+		// Busca apenas os registros que foram soft deleted
+		$usuarios = $this->usuarioModel
+			->onlyDeleted()
+			->select($atributos)
+			->findAll();
+
+		$data = [];
+
+		foreach ($usuarios as $usuario) {
+			$data[] = [
+				'id'    => (int) $usuario->id,
+				'nome'  => esc($usuario->nome),
+				'email' => esc($usuario->email),
+				'ativo' => (bool) $usuario->ativo,
+			];
+		}
+
+		$retorno = [
+			'data' => $data,
+		];
+
+		return $this->response
+			->setStatusCode(200)
+			->setJSON($retorno);
+	}
+
 
 	/**
 	 * Recupera o usuário pelo ID ou retorna resposta 404.

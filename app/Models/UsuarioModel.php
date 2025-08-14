@@ -28,13 +28,40 @@ class UsuarioModel extends Model
     protected $deletedField  = 'deletado_em';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+		'id'           => 'permit_empty|is_natural_no_zero',
+		'nome'         => 'required|min_length[3]|max_length[125]',
+		'email'        => 'required|valid_email|max_length[230]|is_unique[usuarios.email,id,{id}]', // Não pode ter espaços
+		'password'     => 'required|min_length[6]',
+		'password_confirmation' => 'required_with[password]|matches[password]'
+	];
+    protected $validationMessages   = [
+		'nome' => [
+			'required'   => 'O campo nome é obrigatório. Não pode ser vazio.',
+			'min_length' => 'O campo nome deve ter pelo menos 3 caracteres.',
+			'max_length' => 'O campo nome não pode ter mais de 125 caracteres.'
+		],
+		'email' => [
+			'required'   => 'O campo email é obrigatório. Não pode ser vazio.',
+			'valid_email' => 'O campo email deve conter um endereço de email válido.',
+			'max_length' => 'O campo email não pode ter mais de 230 caracteres.',
+			'is_unique' => 'Já existe um usuário cadastrado com este email.'
+		],
+		'password' => [
+			'required'   => 'O campo password é obrigatório. Não pode ser vazio.',
+			'min_length' => 'O campo password deve ter pelo menos 6 caracteres.'
+		],
+		'password_confirmation' => [
+			'required_with' => 'Por favor confirme a sua senha.',
+			'matches'       => 'As senhas precisam combinar.'
+		]
+	];
 
     // Callbacks
     protected $beforeInsert   = ['hashPassword'];
     protected $beforeUpdate   = ['hashPassword'];
 
+	// Método para hashear a senha antes de inserir ou atualizar o usuário
     protected function hashPassword(array $data)
     {
 
