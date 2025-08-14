@@ -8,20 +8,14 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 // Rotas API Usuários
-$routes->group('api', function($routes) {
-    // Listar todos os usuários
-    $routes->get('usuarios', 'Usuarios::index');
-
-    // Exibir um usuário específico
-    $routes->get('usuarios/(:num)', 'Usuarios::exibir/$1');
-
-    // Criar usuário (POST)
-    $routes->post('usuarios', 'Usuarios::criar');
-
-    // Atualizar usuário (PUT ou PATCH)
-    $routes->put('usuarios/(:num)', 'Usuarios::atualizar/$1');
-    $routes->patch('usuarios/(:num)', 'Usuarios::atualizar/$1');
-
-    // Deletar usuário (DELETE)
-    $routes->delete('usuarios/(:num)', 'Usuarios::remover/$1');
-});
+// Listar todos os usuários
+$routes->get('api/usuarios', 'Usuarios::index');
+// Exibir um usuário específico
+$routes->get('api/usuarios/(:num)', 'Usuarios::exibir/$1');
+// Criar usuário (POST)
+$routes->post('api/usuarios', 'Usuarios::criar');
+// Atualizar usuário (PUT ou PATCH)
+$routes->put('api/usuarios/(:num)', 'Usuarios::atualizar/$1');
+$routes->patch('api/usuarios/(:num)', 'Usuarios::atualizar/$1');
+// Deletar usuário (DELETE)
+$routes->delete('api/usuarios/(:num)', 'Usuarios::remover/$1');

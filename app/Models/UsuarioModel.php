@@ -32,7 +32,24 @@ class UsuarioModel extends Model
     protected $validationMessages   = [];
 
     // Callbacks
-    protected $beforeInsert   = [];
-    protected $beforeUpdate   = [];
+    protected $beforeInsert   = ['hashPassword'];
+    protected $beforeUpdate   = ['hashPassword'];
+
+    protected function hashPassword(array $data)
+    {
+
+        if (isset($data['data']['password'])) {
+
+            $data['data']['password_hash'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+
+            // Remove dos dados a serem salvos
+            unset($data['data']['password']);
+            unset($data['data']['password_confirmation']);
+
+        }
+
+        return $data;
+
+    }
     
 }

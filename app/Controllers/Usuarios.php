@@ -58,7 +58,17 @@ class Usuarios extends BaseController
 			return $usuario; // Se já for a resposta 404, retorna direto
 		}
 
-		return $this->response->setStatusCode(200)->setJSON($usuario);
+		// Converte o objeto para array
+		$dados = $usuario->toArray();
+
+		// Remove campos sensíveis
+		unset(
+			$dados['password_hash'],
+			$dados['reset_hash'],
+			$dados['reset_expira_em']
+		);
+
+		return $this->response->setStatusCode(200)->setJSON($dados);
 	}
 
 	public function criar()
@@ -85,27 +95,73 @@ class Usuarios extends BaseController
 			return $dados; // JSON inválido, já retorna a resposta 400
 		}
 
-		return $this->response->setJSON([
-			'status' => 'OK',
-			'mensagem' => "Usuário {$id} atualizado com sucesso",
-			'dados_recebidos' => $dados
-		]);
+		$usuario = $this->buscaUsuarioOu404($id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		// Senão for informado, não atualiza a senha
+		// Se não fizer desta forma, o hashPassword do Model fará o hash de uma string vazia
+		if (empty($dados['password'])) {
+
+			unset($dados['password']);
+			unset($dados['password_confirmation']);
+
+		}
+
+		// Garante que a ID usada na atualização é a da URL
+		$dados['id'] = $id;
+
+		// Preenche os atributos do usuário com os valores do POST
+		$usuario->fill($dados);
+
+		if ($usuario->hasChanged() === false) {
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => 'Nenhum dado foi modificado'
+				]);
+		}
+
+		if ($this->usuarioModel->protect(false)->save($usuario)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Usuário {$id} atualizado com sucesso",
+					'dados_recebidos' => $dados
+				]);
+		}
+
+		// Alguma validação falhou
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao atualizar o usuário',
+				'erros_model' => $this->usuarioModel->errors()
+			]);
 	}
 
 	public function remover($id = null)
 	{
-		return $this->response->setJSON([
-			'status' => 'OK',
-			'mensagem' => "Usuário {$id} excluído com sucesso"
-		]);
+		return $this->response
+			->setStatusCode(200)
+			->setJSON([
+				'status' => 'OK',
+				'mensagem' => "Usuário {$id} excluído com sucesso"
+			]);
 	}
 
 	/**
-	* Recupera o usuário pelo ID ou retorna resposta 404.
-	*
-	* @param int|null $id
-	* @return object|\CodeIgniter\HTTP\ResponseInterface
-	*/
+	 * Recupera o usuário pelo ID ou retorna resposta 404.
+	 *
+	 * @param int|null $id
+	 * @return object|\CodeIgniter\HTTP\ResponseInterface
+	 */
 	private function buscaUsuarioOu404($id = null)
 	{
 
@@ -132,24 +188,27 @@ class Usuarios extends BaseController
 	{
 		$dados = [];
 
-		// Se o Content-Type for JSON
-		if (stripos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-			try {
-				$dados = $this->request->getJSON(true); // retorna array
-			} catch (\Exception $e) {
-				return $this->response->setJSON([
+		$contentType = $this->request->getHeaderLine('Content-Type');
+
+		if (stripos($contentType, 'application/json') === false) {
+			// Retorna erro se não for JSON
+			return $this->response
+				->setStatusCode(415) // 415 Unsupported Media Type
+				->setJSON([
+					'status' => 'erro',
+					'mensagem' => 'Formato inválido. Envie os dados como JSON.'
+				]);
+		}
+
+		try {
+			$dados = $this->request->getJSON(true); // retorna array
+		} catch (\Exception $e) {
+			return $this->response
+				->setStatusCode(400) // JSON inválido
+				->setJSON([
 					'status' => 'erro',
 					'mensagem' => 'JSON inválido'
-				])->setStatusCode(400);
-			}
-		} else {
-			// Para POST, PUT, PATCH ou DELETE com form-data ou x-www-form-urlencoded
-			$dados = $this->request->getRawInput();
-
-			// POST comum também pode usar getPost()
-			if (empty($dados) && $this->request->getMethod() === 'post') {
-				$dados = $this->request->getPost();
-			}
+				]);
 		}
 
 		return $dados;
