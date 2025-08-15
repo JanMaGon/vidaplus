@@ -106,7 +106,6 @@ class Usuarios extends BaseController
 			]);
 	}
 
-
 	public function atualizar($id = null)
 	{
 		$dados = $this->getRequestData();
@@ -183,7 +182,19 @@ class Usuarios extends BaseController
 			return $usuario; // Se já for a resposta 404, retorna direto
 		}
 
+		if ($usuario->deletado_em != null) {
+			return $this->response
+				->setStatusCode(400)
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => "Esse usuário já encontra-se excluído"
+				]);
+		}
+
 		if ($this->usuarioModel->delete($usuario->id)) {
+
+			$usuario->ativo = false;
+			$this->usuarioModel->protect(false)->save($usuario);
 
 			return $this->response
 				->setStatusCode(200)
@@ -201,13 +212,14 @@ class Usuarios extends BaseController
 			]);
 	}
 
-	public function trash()
+	public function lixeira()
 	{
 		$atributos = [
 			'id',
 			'nome',
 			'email',
 			'ativo',
+			'deletado_em', // Inclui o campo deletado para exibir quando foi excluído
 		];
 
 		// Busca apenas os registros que foram soft deleted
@@ -224,6 +236,7 @@ class Usuarios extends BaseController
 				'nome'  => esc($usuario->nome),
 				'email' => esc($usuario->email),
 				'ativo' => (bool) $usuario->ativo,
+				'deletado_em' => $usuario->deletado_em,
 			];
 		}
 
@@ -236,6 +249,44 @@ class Usuarios extends BaseController
 			->setJSON($retorno);
 	}
 
+	public function restaurar($id = null)
+	{
+
+		$usuario = $this->buscaUsuarioOu404($id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		if ($usuario->deletado_em == null) {
+			return $this->response
+				->setStatusCode(400)
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => "Apenas usuários excluídos podem ser restaurados"
+				]);
+		}
+
+		$usuario->deletado_em = null; // Limpa o campo de exclusão
+		
+		if ($this->usuarioModel->protect(false)->save($usuario)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Usuário restaurado com sucesso"
+				]);
+
+		}
+
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar restaurar o usuário'
+			]);
+	}
 
 	/**
 	 * Recupera o usuário pelo ID ou retorna resposta 404.
