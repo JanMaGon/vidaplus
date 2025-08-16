@@ -5,6 +5,20 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
+
+$routes->set404Override(function() {
+    $response = service('response');
+    $response->setStatusCode(404)
+             ->setJSON([
+                 'status'   => 'error',
+                 'mensagem' => 'Endpoint não encontrado. Verifique se a URL está correta e sem barra final.'
+             ])
+             ->send();   // força saída
+
+    exit; // evita que CI tente processar de novo
+});
+
+
 $routes->get('/', 'Home::index');
 
 /*********************** 
@@ -20,11 +34,26 @@ $routes->get('api/usuarios/restaurar/(:num)', 'Usuarios::restaurar/$1');
 // Exibir um usuário específico
 $routes->get('api/usuarios/(:num)', 'Usuarios::exibir/$1');
 // Criar usuário (POST)
-$routes->post('api/usuarios', 'Usuarios::criar');
+$routes->post('api/usuario', 'Usuarios::criar');
 // Atualizar usuário (PUT ou PATCH)
-$routes->put('api/usuarios/(:num)', 'Usuarios::atualizar/$1');
-$routes->patch('api/usuarios/(:num)', 'Usuarios::atualizar/$1');
+$routes->put('api/usuario/(:num)', 'Usuarios::atualizar/$1');
+$routes->patch('api/usuario/(:num)', 'Usuarios::atualizar/$1');
 // Deletar usuário (DELETE)
-$routes->delete('api/usuarios/(:num)', 'Usuarios::remover/$1');
+$routes->delete('api/usuario/(:num)', 'Usuarios::remover/$1');
 
 // ** Grupos **
+// Listar todos os grupos
+$routes->get('api/grupos', 'Grupos::index');
+// Gupos deletados (soft delete)
+$routes->get('api/grupos/deletados', 'Grupos::lixeira');
+// Restaurar grupo (GET)
+$routes->get('api/grupos/restaurar/(:num)', 'Grupos::restaurar/$1');
+// Exibir um grupo específico
+$routes->get('api/grupos/(:num)', 'Grupos::exibir/$1');
+// Criar grupo (POST)
+$routes->post('api/grupo', 'Grupos::criar');
+// Atualizar grupo (PUT ou PATCH)
+$routes->put('api/grupo/(:num)', 'Grupos::atualizar/$1');
+$routes->patch('api/grupo/(:num)', 'Grupos::atualizar/$1');
+// Deletar grupo (DELETE)
+$routes->delete('api/grupo/(:num)', 'Grupos::remover/$1');

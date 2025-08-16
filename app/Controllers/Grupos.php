@@ -3,41 +3,41 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Entities\Usuario;
+use App\Entities\Grupo;
 use CodeIgniter\HTTP\ResponseInterface;
 
-class Usuarios extends BaseController
+class Grupos extends BaseController
 {
 
-	private $usuarioModel;
+    private $grupoModel;
 
-	public function __construct()
-	{
-		$this->usuarioModel = new \App\Models\UsuarioModel();
-	}
+    public function __construct()
+    {
+        $this->grupoModel = new \App\Models\GrupoModel();
+    }
 
-	public function index()
-	{
-
-		$atributos = [
+    public function index()
+    {
+        
+        $atributos = [
 			'id',
 			'nome',
-			'email',
-			'ativo',
+			'descricao',
+			'exibir',
 		];
 
-		$usuarios = $this->usuarioModel->select($atributos)->findAll();
+		$grupos = $this->grupoModel->select($atributos)->findAll();
 
 		$data = [];
 
-		foreach ($usuarios as $usuario) {
+		foreach ($grupos as $grupo) {
 
-			// Receberá o array de objetos de usuários
+			// Receberá o array de objetos de grupos
 			$data[] = [
-				'id' => (int) $usuario->id,
-				'nome' => esc($usuario->nome),
-				'email' => esc($usuario->email),
-				'ativo' => (bool) $usuario->ativo,
+				'id' => (int) $grupo->id,
+				'nome' => esc($grupo->nome),
+				'descricao' => esc($grupo->descricao),
+				'exibir' => (bool) $grupo->exibir,
 			];
 		}
 
@@ -46,28 +46,22 @@ class Usuarios extends BaseController
 		];
 
 		return $this->response->setStatusCode(200)->setJSON($retorno);
-	}
+
+    }
 
 	public function exibir($id = null)
 	{
 
-		$usuario = $this->buscaUsuarioOu404($id);
+		$grupo = $this->buscaGrupoOu404($id);
 
-		// Verifica se $usuario é uma resposta HTTP (ResponseInterface).
+		// Verifica se $grupo é uma resposta HTTP (ResponseInterface).
 		// Se for, encerra a execução.
-		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
-			return $usuario; // Se já for a resposta 404, retorna direto
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
 		}
 
 		// Converte o objeto para array
-		$dados = $usuario->toArray();
-
-		// Remove campos sensíveis
-		unset(
-			$dados['password_hash'],
-			$dados['reset_hash'],
-			$dados['reset_expira_em']
-		);
+		$dados = $grupo->toArray();
 
 		return $this->response->setStatusCode(200)->setJSON($dados);
 	}
@@ -80,19 +74,19 @@ class Usuarios extends BaseController
 			return $dados; // JSON inválido, já retorna a resposta 400
 		}
 
-		// Cria um novo objeto da Entidade Usuario
-		$usuario = new Usuario($dados);
+		// Cria um novo objeto da Entidade Grupo
+		$grupo = new Grupo($dados);
 
-		if ($this->usuarioModel->protect(false)->save($usuario)) {
+		if ($this->grupoModel->save($grupo)) {
 
 			// Retornamos junto com o status o último ID inserido
-			// Ou seja, o ID do usuário recém-criado
+			// Ou seja, o ID do grupo recém-criado
 			return $this->response
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Usuário criado com sucesso",
-					'id' => $this->usuarioModel->getInsertID()
+					'mensagem' => "Grupo criado com sucesso",
+					'id' => $this->grupoModel->getInsertID()
 				]);
 		}
 
@@ -101,8 +95,8 @@ class Usuarios extends BaseController
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao criar o usuário',
-				'erros_model' => $this->usuarioModel->errors()
+				'mensagem' => 'Erro ao criar o grupo',
+				'erros_model' => $this->grupoModel->errors()
 			]);
 	}
 
@@ -114,37 +108,37 @@ class Usuarios extends BaseController
 			return $dados; // JSON inválido, já retorna a resposta 400
 		}
 
-		$usuario = $this->buscaUsuarioOu404($id);
+		$grupo = $this->buscaGrupoOu404($id);
 
-		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
-			return $usuario; // Se já for a resposta 404, retorna direto
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
 		}
 
-		// Se informou senha mas não confirmou, retorna erro
-		if (!empty($dados['password']) && empty($dados['password_confirmation'])) {
+		// Garantimos que os grupos Administrador e Paciente não sejam alterados
+		// IDs 1 e 2 são reservados para Administrador e Paciente.
+		if ($grupo->id < 3) {
+
+			/*
+			* aqui futuramente deve ser aplicado um métdoo para registrar 
+			* em um log qual usuário tentou manipular os registros de ID 1 e 2 
+			*/
+
 			return $this->response
-				->setStatusCode(400)
+				->setStatusCode(500) // Erro interno do servidor
 				->setJSON([
 					'status' => 'error',
-					'mensagem' => 'Por favor confirme a sua senha.'
+					'mensagem' => 'Não é permitido alterações neste grupo.'
 				]);
-		}
 
-		// Senão for informado, não atualiza a senha
-		// Se não fizer desta forma, o hashPassword do Model fará o hash de uma string vazia
-		if (empty($dados['password'])) {
-
-			unset($dados['password']);
-			unset($dados['password_confirmation']);
 		}
 
 		// Garante que a ID usada na atualização é a da URL
 		$dados['id'] = $id;
 
 		// Preenche os atributos do usuário com os valores do POST
-		$usuario->fill($dados);
+		$grupo->fill($dados);
 
-		if ($usuario->hasChanged() === false) {
+		if ($grupo->hasChanged() === false) {
 			return $this->response
 				->setStatusCode(200)
 				->setJSON([
@@ -153,13 +147,13 @@ class Usuarios extends BaseController
 				]);
 		}
 
-		if ($this->usuarioModel->protect(false)->save($usuario)) {
+		if ($this->grupoModel->save($grupo)) {
 
 			return $this->response
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Usuário atualizado com sucesso"
+					'mensagem' => "Grupo atualizado com sucesso"
 				]);
 		}
 
@@ -168,39 +162,54 @@ class Usuarios extends BaseController
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao atualizar o usuário',
-				'erros_model' => $this->usuarioModel->errors()
+				'mensagem' => 'Erro ao atualizar o grupo',
+				'erros_model' => $this->grupoModel->errors()
 			]);
 	}
 
 	public function remover($id = null)
 	{
 
-		$usuario = $this->buscaUsuarioOu404($id);
+		$grupo = $this->buscaGrupoOu404($id);
 
-		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
-			return $usuario; // Se já for a resposta 404, retorna direto
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
 		}
 
-		if ($usuario->deletado_em != null) {
+		// Garantimos que os grupos Administrador e Paciente não sejam alterados
+		// IDs 1 e 2 são reservados para Administrador e Paciente.
+		if ($grupo->id < 3) {
+
+			/*
+			* aqui futuramente deve ser aplicado um métdoo para registrar 
+			* em um log qual usuário tentou manipular os registros de ID 1 e 2 
+			*/
+
+			return $this->response
+				->setStatusCode(500) // Erro interno do servidor
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Não é permitido alterações neste grupo.'
+				]);
+
+		}
+
+		if ($grupo->deletado_em != null) {
 			return $this->response
 				->setStatusCode(400)
 				->setJSON([
 					'status' => 'error',
-					'mensagem' => "Esse usuário já encontra-se excluído"
+					'mensagem' => "Esse grupo já encontra-se excluído"
 				]);
 		}
 
-		if ($this->usuarioModel->delete($usuario->id)) {
-
-			$usuario->ativo = false;
-			$this->usuarioModel->protect(false)->save($usuario);
+		if ($this->grupoModel->delete($grupo->id)) {
 
 			return $this->response
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Usuário excluído com sucesso"
+					'mensagem' => "Grupo excluído com sucesso"
 				]);
 		}
 
@@ -208,7 +217,7 @@ class Usuarios extends BaseController
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao tentar excluir o usuário'
+				'mensagem' => 'Erro ao tentar excluir o grupo'
 			]);
 	}
 
@@ -217,26 +226,26 @@ class Usuarios extends BaseController
 		$atributos = [
 			'id',
 			'nome',
-			'email',
-			'ativo',
+			'descricao',
+			'exibir',
 			'deletado_em', // Inclui o campo deletado para exibir quando foi excluído
 		];
 
 		// Busca apenas os registros que foram soft deleted
-		$usuarios = $this->usuarioModel
+		$grupos = $this->grupoModel
 			->onlyDeleted()
 			->select($atributos)
 			->findAll();
 
 		$data = [];
 
-		foreach ($usuarios as $usuario) {
+		foreach ($grupos as $grupo) {
 			$data[] = [
-				'id'    => (int) $usuario->id,
-				'nome'  => esc($usuario->nome),
-				'email' => esc($usuario->email),
-				'ativo' => (bool) $usuario->ativo,
-				'deletado_em' => $usuario->deletado_em,
+				'id'    => (int) $grupo->id,
+				'nome'  => esc($grupo->nome),
+				'descricao' => esc($grupo->descricao),
+				'exibir' => (bool) $grupo->exibir,
+				'deletado_em' => $grupo->deletado_em,
 			];
 		}
 
@@ -252,30 +261,30 @@ class Usuarios extends BaseController
 	public function restaurar($id = null)
 	{
 
-		$usuario = $this->buscaUsuarioOu404($id);
+		$grupo = $this->buscaGrupoOu404($id);
 
-		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
-			return $usuario; // Se já for a resposta 404, retorna direto
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
 		}
 
-		if ($usuario->deletado_em == null) {
+		if ($grupo->deletado_em == null) {
 			return $this->response
 				->setStatusCode(400)
 				->setJSON([
 					'status' => 'error',
-					'mensagem' => "Apenas usuários excluídos podem ser restaurados"
+					'mensagem' => "Apenas grupos excluídos podem ser restaurados"
 				]);
 		}
 
-		$usuario->deletado_em = null; // Limpa o campo de exclusão
+		$grupo->deletado_em = null; // Limpa o campo de exclusão
 		
-		if ($this->usuarioModel->protect(false)->save($usuario)) {
+		if ($this->grupoModel->protect(false)->save($grupo)) {
 
 			return $this->response
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Usuário restaurado com sucesso"
+					'mensagem' => "Grupo restaurado com sucesso"
 				]);
 
 		}
@@ -284,29 +293,29 @@ class Usuarios extends BaseController
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao tentar restaurar o usuário'
+				'mensagem' => 'Erro ao tentar restaurar o grupo'
 			]);
 	}
 
 	/**
-	 * Recupera o usuário pelo ID ou retorna resposta 404.
+	 * Recupera o grupo pelo ID ou retorna resposta 404.
 	 *
 	 * @param int|null $id
 	 * @return object|\CodeIgniter\HTTP\ResponseInterface
 	 */
-	private function buscaUsuarioOu404($id = null)
+	private function buscaGrupoOu404($id = null)
 	{
 
-		if (!$id || !$usuario = $this->usuarioModel->withDeleted(true)->find($id)) {
+		if (!$id || !$grupo = $this->grupoModel->withDeleted(true)->find($id)) {
 			return $this->response
 				->setStatusCode(404)
 				->setJSON([
 					'status'  => 'error',
-					'message' => "Não encontramos o usuário"
+					'message' => "Não encontramos o grupo {$id}"
 				]);
 		}
 
-		return $usuario;
+		return $grupo;
 	}
 
 	/**
