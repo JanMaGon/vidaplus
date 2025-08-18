@@ -10,10 +10,12 @@ class Grupos extends BaseController
 {
 
     private $grupoModel;
+    private $grupoPermissaoModel;
 
     public function __construct()
     {
         $this->grupoModel = new \App\Models\GrupoModel();
+        $this->grupoPermissaoModel = new \App\Models\GrupoPermissaoModel();
     }
 
     public function index()
@@ -295,6 +297,57 @@ class Grupos extends BaseController
 				'status' => 'error',
 				'mensagem' => 'Erro ao tentar restaurar o grupo'
 			]);
+	}
+
+	public function permissoes($id = null)
+	{
+
+		$grupo = $this->buscaGrupoOu404($id);
+
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
+		}
+
+		// Grupos Administrador e Paciente não podem ter atribuídas permissões
+		// IDs 1 e 2 são reservados para Administrador e Paciente.
+		if ($grupo->id < 3) {
+
+			/*
+			* aqui futuramente deve ser aplicado um métdoo para registrar 
+			* em um log qual usuário tentou manipular os registros de ID 1 e 2 
+			*/
+
+			return $this->response
+				->setStatusCode(500) // Erro interno do servidor
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Não é necessário atribuir ou remover permissões de acesso para este grupo.'
+				]);
+
+		}
+
+		if ($grupo->id > 2) {
+
+			$permissoes = $this->grupoPermissaoModel->recuperaPermissoesDoGrupo($grupo->id);
+
+			$data = [];
+
+			foreach ($permissoes as $permissao) {
+				$data[] = [
+					'id'    => (int) $permissao->permissao_id,
+					'nome'  => esc($permissao->nome),
+				];
+			}
+
+			$retorno = [
+				'data' => $data,
+			];
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON($retorno);
+		}
+
 	}
 
 	/**

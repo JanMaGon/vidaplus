@@ -50,6 +50,8 @@ $routes->get('api/grupos/deletados', 'Grupos::lixeira');
 $routes->get('api/grupos/restaurar/(:num)', 'Grupos::restaurar/$1');
 // Exibir um grupo específico
 $routes->get('api/grupos/(:num)', 'Grupos::exibir/$1');
+// Exibir as permissões do grupo específico
+$routes->get('api/grupos/permissoes/(:num)', 'Grupos::permissoes/$1');
 // Criar grupo (POST)
 $routes->post('api/grupo', 'Grupos::criar');
 // Atualizar grupo (PUT ou PATCH)
