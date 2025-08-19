@@ -11,11 +11,15 @@ class Grupos extends BaseController
 
     private $grupoModel;
     private $grupoPermissaoModel;
+	private $permissaoModel;
 
     public function __construct()
     {
+
         $this->grupoModel = new \App\Models\GrupoModel();
         $this->grupoPermissaoModel = new \App\Models\GrupoPermissaoModel();
+		$this->permissaoModel = new \App\Models\PermissaoModel();
+
     }
 
     public function index()
@@ -328,25 +332,52 @@ class Grupos extends BaseController
 
 		if ($grupo->id > 2) {
 
-			$permissoes = $this->grupoPermissaoModel->recuperaPermissoesDoGrupo($grupo->id);
+			$grupo->permissoes = $this->grupoPermissaoModel->recuperaPermissoesDoGrupo($grupo->id);
 
-			$data = [];
+			// A ideia inicial é que o cliente da API vai precisar exibir as duas informações juntas
+			// então retorno as permissões que o grupo já possui e as que não possui
+			// para que o cliente possa exibir as duas listas e permitir atribuir ou remover permissões do grupo.
+			// Para melhorar a escalabilidade, futuramente pode ser implementado paginação, filtros e separar em dois
+			// endpoints, assim o cliente decide o que precisa.
+			$possui = [];
+			$naoPossui = [];
 
-			foreach ($permissoes as $permissao) {
-				$data[] = [
+			foreach ($grupo->permissoes as $permissao) {
+				$possui[] = [
 					'id'    => (int) $permissao->permissao_id,
 					'nome'  => esc($permissao->nome),
 				];
 			}
 
+			if (!empty($grupo->permissoes)) {
+
+				$permissoes = array_column($grupo->permissoes, 'permissao_id');
+
+				$naoPossui = $this->permissaoModel->whereNotIn('id', $permissoes)->findAll();
+
+			} else {
+
+				// Se o grupo não possui nenhuma permissão, busca todas as permissões disponíveis
+				$naoPossui = $this->permissaoModel->findAll();
+
+			}
+			
 			$retorno = [
-				'data' => $data,
+				'possui' => $possui,
+				'nao_possui' => $naoPossui,
 			];
 
 			return $this->response
 				->setStatusCode(200)
 				->setJSON($retorno);
 		}
+
+	}
+
+	public function salvarPermissoes()
+	{
+
+		
 
 	}
 
