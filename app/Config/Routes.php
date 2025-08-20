@@ -61,3 +61,5 @@ $routes->put('api/grupo/(:num)', 'Grupos::atualizar/$1');
 $routes->patch('api/grupo/(:num)', 'Grupos::atualizar/$1');
 // Deletar grupo (DELETE)
 $routes->delete('api/grupo/(:num)', 'Grupos::remover/$1');
+// Remover permissões de um grupo (DELETE)
+$routes->delete('api/grupo/(:num)/permissoes/(:num)/remover', 'Grupos::removerPermissoes/$1/$2');

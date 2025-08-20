@@ -9,23 +9,22 @@ use CodeIgniter\HTTP\ResponseInterface;
 class Grupos extends BaseController
 {
 
-    private $grupoModel;
-    private $grupoPermissaoModel;
+	private $grupoModel;
+	private $grupoPermissaoModel;
 	private $permissaoModel;
 
-    public function __construct()
-    {
+	public function __construct()
+	{
 
-        $this->grupoModel = new \App\Models\GrupoModel();
-        $this->grupoPermissaoModel = new \App\Models\GrupoPermissaoModel();
+		$this->grupoModel = new \App\Models\GrupoModel();
+		$this->grupoPermissaoModel = new \App\Models\GrupoPermissaoModel();
 		$this->permissaoModel = new \App\Models\PermissaoModel();
+	}
 
-    }
+	public function index()
+	{
 
-    public function index()
-    {
-        
-        $atributos = [
+		$atributos = [
 			'id',
 			'nome',
 			'descricao',
@@ -52,8 +51,7 @@ class Grupos extends BaseController
 		];
 
 		return $this->response->setStatusCode(200)->setJSON($retorno);
-
-    }
+	}
 
 	public function exibir($id = null)
 	{
@@ -91,8 +89,7 @@ class Grupos extends BaseController
 				->setStatusCode(200)
 				->setJSON([
 					'status' => 'OK',
-					'mensagem' => "Grupo criado com sucesso",
-					'id' => $this->grupoModel->getInsertID()
+					'mensagem' => "Grupo criado com sucesso"
 				]);
 		}
 
@@ -130,12 +127,11 @@ class Grupos extends BaseController
 			*/
 
 			return $this->response
-				->setStatusCode(500) // Erro interno do servidor
+				->setStatusCode(403) // Forbidden
 				->setJSON([
 					'status' => 'error',
 					'mensagem' => 'Não é permitido alterações neste grupo.'
 				]);
-
 		}
 
 		// Garante que a ID usada na atualização é a da URL
@@ -192,17 +188,16 @@ class Grupos extends BaseController
 			*/
 
 			return $this->response
-				->setStatusCode(500) // Erro interno do servidor
+				->setStatusCode(403) // Forbidden
 				->setJSON([
 					'status' => 'error',
 					'mensagem' => 'Não é permitido alterações neste grupo.'
 				]);
-
 		}
 
 		if ($grupo->deletado_em != null) {
 			return $this->response
-				->setStatusCode(400)
+				->setStatusCode(400) // Bad Request
 				->setJSON([
 					'status' => 'error',
 					'mensagem' => "Esse grupo já encontra-se excluído"
@@ -223,7 +218,8 @@ class Grupos extends BaseController
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao tentar excluir o grupo'
+				'mensagem' => 'Erro ao tentar excluir o grupo',
+				'erros_model' => $this->grupoModel->errors()
 			]);
 	}
 
@@ -275,7 +271,7 @@ class Grupos extends BaseController
 
 		if ($grupo->deletado_em == null) {
 			return $this->response
-				->setStatusCode(400)
+				->setStatusCode(400) // Bad Request
 				->setJSON([
 					'status' => 'error',
 					'mensagem' => "Apenas grupos excluídos podem ser restaurados"
@@ -283,7 +279,7 @@ class Grupos extends BaseController
 		}
 
 		$grupo->deletado_em = null; // Limpa o campo de exclusão
-		
+
 		if ($this->grupoModel->protect(false)->save($grupo)) {
 
 			return $this->response
@@ -292,21 +288,21 @@ class Grupos extends BaseController
 					'status' => 'OK',
 					'mensagem' => "Grupo restaurado com sucesso"
 				]);
-
 		}
 
 		return $this->response
 			->setStatusCode(500) // Erro interno do servidor
 			->setJSON([
 				'status' => 'error',
-				'mensagem' => 'Erro ao tentar restaurar o grupo'
+				'mensagem' => 'Erro ao tentar restaurar o grupo',
+				'erros_model' => $this->grupoModel->errors()
 			]);
 	}
 
-	public function permissoes($id = null)
+	public function permissoes($grupo_id = null)
 	{
 
-		$grupo = $this->buscaGrupoOu404($id);
+		$grupo = $this->buscaGrupoOu404($grupo_id);
 
 		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
 			return $grupo; // Se já for a resposta 404, retorna direto
@@ -322,12 +318,11 @@ class Grupos extends BaseController
 			*/
 
 			return $this->response
-				->setStatusCode(500) // Erro interno do servidor
+				->setStatusCode(403) // Forbidden
 				->setJSON([
 					'status' => 'error',
 					'mensagem' => 'Não é necessário atribuir ou remover permissões de acesso para este grupo.'
 				]);
-
 		}
 
 		if ($grupo->id > 2) {
@@ -344,7 +339,8 @@ class Grupos extends BaseController
 
 			foreach ($grupo->permissoes as $permissao) {
 				$possui[] = [
-					'id'    => (int) $permissao->permissao_id,
+					'id' => (int) $permissao->id,
+					'permissao_id'    => (int) $permissao->permissao_id,
 					'nome'  => esc($permissao->nome),
 				];
 			}
@@ -354,14 +350,12 @@ class Grupos extends BaseController
 				$permissoes = array_column($grupo->permissoes, 'permissao_id');
 
 				$naoPossui = $this->permissaoModel->whereNotIn('id', $permissoes)->findAll();
-
 			} else {
 
 				// Se o grupo não possui nenhuma permissão, busca todas as permissões disponíveis
 				$naoPossui = $this->permissaoModel->findAll();
-
 			}
-			
+
 			$retorno = [
 				'possui' => $possui,
 				'nao_possui' => $naoPossui,
@@ -371,14 +365,152 @@ class Grupos extends BaseController
 				->setStatusCode(200)
 				->setJSON($retorno);
 		}
-
 	}
 
-	public function salvarPermissoes()
+	public function salvarPermissoes($grupo_id = null)
 	{
 
-		
+		$dados = $this->getRequestData();
 
+		if ($dados instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $dados; // JSON inválido, já retorna a resposta 400
+		}
+
+		$grupo = $this->buscaGrupoOu404($grupo_id);
+
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
+		}
+
+		// Grupos Administrador e Paciente não podem ter atribuídas permissões
+		// IDs 1 e 2 são reservados para Administrador e Paciente.
+		if ($grupo->id < 3) {
+
+			/*
+			* aqui futuramente deve ser aplicado um métdoo para registrar 
+			* em um log qual usuário tentou manipular os registros de ID 1 e 2 
+			*/
+
+			return $this->response
+				->setStatusCode(403) // Forbidden
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Não é necessário atribuir ou remover permissões de acesso para este grupo.'
+				]);
+		}
+
+
+		if (empty($dados['permissao_id'])) {
+
+			return $this->response
+				->setStatusCode(400) // Bad Request
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Nenhuma permissão foi informada para atribuir ao grupo.'
+				]);
+		}
+
+		// Permissões já atribuídas ao grupo. Retorna só os IDs já salvos
+		$permissoesExistentes = $this->grupoPermissaoModel->where('grupo_id', $grupo->id)->findColumn('permissao_id');
+
+		// Receberá as permissões do POST
+		$permissaoPush = [];
+
+		// Filtar as permissões que já existem
+		// e só inserir as que não estão atribuídas ao grupo
+		foreach ($dados['permissao_id'] as $permissao) {
+
+			if (! in_array($permissao, $permissoesExistentes)) {
+				$permissaoPush[] = [
+					'grupo_id'     => $grupo->id,
+					'permissao_id' => $permissao
+				];
+			}
+		}
+
+		// Verifica se sobrou alguma permissão para inserir
+		if (empty($permissaoPush)) {
+			return $this->response
+				->setStatusCode(409) // Conflict
+				->setJSON([
+					'status'   => 'error',
+					'mensagem' => 'Todas as permissões informadas já estão atribuídas ao grupo.'
+				]);
+		}
+
+		if ($this->grupoPermissaoModel->insertBatch($permissaoPush)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Permissões salvas com sucesso"
+				]);
+		}
+
+
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar salvar as permissões do grupo',
+				'erros_model' => $this->grupoPermissaoModel->errors()
+			]);
+	}
+
+	public function removerPermissoes($grupo_id = null, $permissao_id = null)
+	{
+
+		$grupo = $this->buscaGrupoOu404($grupo_id);
+
+		if ($grupo instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupo; // Se já for a resposta 404, retorna direto
+		}
+
+		// Grupos Administrador e Paciente não podem ter atribuídas permissões
+		// IDs 1 e 2 são reservados para Administrador e Paciente.
+		if ($grupo->id < 3) {
+
+			/*
+			* aqui futuramente deve ser aplicado um métdoo para registrar 
+			* em um log qual usuário tentou manipular os registros de ID 1 e 2 
+			*/
+
+			return $this->response
+				->setStatusCode(403) // Forbidden
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Não é necessário atribuir ou remover permissões de acesso para este grupo.'
+				]);
+		}
+
+		// Verifica se a permissão existe
+		if (! $this->grupoPermissaoModel->find($permissao_id)) {
+			return $this->response
+				->setStatusCode(404) // Not Found
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Permissão não encontrada para exclusão'
+				]);
+		}
+
+		if ($this->grupoPermissaoModel->delete($permissao_id)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Permissao removida com sucesso"
+				]);
+		}
+
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar excluir a permissão do grupo',
+				'erros_model' => $this->grupoPermissaoModel->errors()
+			]);
 	}
 
 	/**
