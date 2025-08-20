@@ -33,6 +33,8 @@ $routes->get('api/usuarios/deletados', 'Usuarios::lixeira');
 $routes->get('api/usuarios/restaurar/(:num)', 'Usuarios::restaurar/$1');
 // Exibir um usuário específico
 $routes->get('api/usuarios/(:num)', 'Usuarios::exibir/$1');
+// Exibir os grupos que o usuário pertence e os que não pertence
+$routes->get('api/usuarios/(:num)/grupos', 'Usuarios::grupos/$1');
 // Criar usuário (POST)
 $routes->post('api/usuario', 'Usuarios::criar');
 // Atualizar usuário (PUT ou PATCH)

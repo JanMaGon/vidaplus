@@ -10,10 +10,14 @@ class Usuarios extends BaseController
 {
 
 	private $usuarioModel;
+	private $grupoUsuarioModel;
+	private $grupoModel;
 
 	public function __construct()
 	{
-		$this->usuarioModel = new \App\Models\UsuarioModel();
+		$this->usuarioModel      = new \App\Models\UsuarioModel();
+		$this->grupoUsuarioModel = new \App\Models\GrupoUsuarioModel();
+		$this->grupoModel        = new \App\Models\GrupoModel();
 	}
 
 	public function index()
@@ -286,6 +290,66 @@ class Usuarios extends BaseController
 				'status' => 'error',
 				'mensagem' => 'Erro ao tentar restaurar o usuário'
 			]);
+	}
+
+	public function grupos($id = null)
+	{
+
+		$usuario = $this->buscaUsuarioOu404($id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		$usuario->grupos = $this->grupoUsuarioModel->recuperaGruposDoUsuario($usuario->id);
+
+		// Quando o usuário é um paciente, não pode adicionar grupos
+		if (in_array(2, array_column($usuario->grupos, 'grupo_id'))) {
+
+			return $this->response
+				->setStatusCode(403) // Forbidden
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Este usuário é um paciente. Não é permitido adicionar ou remover grupo.'
+				]);
+
+		}
+		
+		$pertence = [];
+		$naoPertence = [];
+
+		foreach ($usuario->grupos as $grupo) {
+			$pertence[] = [
+				'id' => (int) $grupo->id,
+				'grupo_id'    => (int) $grupo->grupo_id,
+				'nome'  => esc($grupo->nome),
+				'descricao'  => esc($grupo->nome),
+			];
+		}
+
+		if (!empty($usuario->grupos)) {
+			
+			// Recupera os grupos que o usuário não pertence
+			$gruposExistentes = array_column($usuario->grupos, 'grupo_id');
+
+			// Não recupera o grupo de ID 2 (Paciente)
+			$naoPertence = $this->grupoModel->where('id !=', 2)->whereNotIn('id', $gruposExistentes)->findAll();
+
+		} else {
+
+			// Recupera todos os grupos, exceto o de ID 2 (Paciente)
+			$naoPertence = $this->grupoModel->where('id !=', 2)->findAll();
+		
+		}
+
+		$retorno = [
+			'pertence' => $pertence,
+			'nao_pertence' => $naoPertence,
+		];
+
+		return $this->response
+			->setStatusCode(200)
+			->setJSON($retorno);
 	}
 
 	/**
