@@ -35,6 +35,8 @@ $routes->get('api/usuarios/restaurar/(:num)', 'Usuarios::restaurar/$1');
 $routes->get('api/usuarios/(:num)', 'Usuarios::exibir/$1');
 // Exibir os grupos que o usuário pertence e os que não pertence
 $routes->get('api/usuarios/(:num)/grupos', 'Usuarios::grupos/$1');
+// Salvar grupos que o usuário pertence (POST)
+$routes->post('api/usuario/(:num)/grupos/salvar', 'Usuarios::salvarGrupos/$1');
 // Criar usuário (POST)
 $routes->post('api/usuario', 'Usuarios::criar');
 // Atualizar usuário (PUT ou PATCH)
@@ -42,6 +44,8 @@ $routes->put('api/usuario/(:num)', 'Usuarios::atualizar/$1');
 $routes->patch('api/usuario/(:num)', 'Usuarios::atualizar/$1');
 // Deletar usuário (DELETE)
 $routes->delete('api/usuario/(:num)', 'Usuarios::remover/$1');
+// Remover grupos de um usuario (DELETE)
+$routes->delete('api/usuario/(:num)/grupos/(:num)/remover', 'Usuarios::removerGrupos/$1/$2');
 
 // ** Grupos **
 // Listar todos os grupos

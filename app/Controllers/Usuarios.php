@@ -272,7 +272,7 @@ class Usuarios extends BaseController
 		}
 
 		$usuario->deletado_em = null; // Limpa o campo de exclusão
-		
+
 		if ($this->usuarioModel->protect(false)->save($usuario)) {
 
 			return $this->response
@@ -281,7 +281,6 @@ class Usuarios extends BaseController
 					'status' => 'OK',
 					'mensagem' => "Usuário restaurado com sucesso"
 				]);
-
 		}
 
 		return $this->response
@@ -292,10 +291,10 @@ class Usuarios extends BaseController
 			]);
 	}
 
-	public function grupos($id = null)
+	public function grupos($usuario_id = null)
 	{
 
-		$usuario = $this->buscaUsuarioOu404($id);
+		$usuario = $this->buscaUsuarioOu404($usuario_id);
 
 		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
 			return $usuario; // Se já for a resposta 404, retorna direto
@@ -312,9 +311,8 @@ class Usuarios extends BaseController
 					'status' => 'error',
 					'mensagem' => 'Este usuário é um paciente. Não é permitido adicionar ou remover grupo.'
 				]);
-
 		}
-		
+
 		$pertence = [];
 		$naoPertence = [];
 
@@ -328,18 +326,16 @@ class Usuarios extends BaseController
 		}
 
 		if (!empty($usuario->grupos)) {
-			
+
 			// Recupera os grupos que o usuário não pertence
 			$gruposExistentes = array_column($usuario->grupos, 'grupo_id');
 
 			// Não recupera o grupo de ID 2 (Paciente)
 			$naoPertence = $this->grupoModel->where('id !=', 2)->whereNotIn('id', $gruposExistentes)->findAll();
-
 		} else {
 
 			// Recupera todos os grupos, exceto o de ID 2 (Paciente)
 			$naoPertence = $this->grupoModel->where('id !=', 2)->findAll();
-		
 		}
 
 		$retorno = [
@@ -350,6 +346,136 @@ class Usuarios extends BaseController
 		return $this->response
 			->setStatusCode(200)
 			->setJSON($retorno);
+	}
+
+	public function salvarGrupos($usuario_id = null)
+	{
+
+		$dados = $this->getRequestData();
+
+		if ($dados instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $dados; // JSON inválido, já retorna a resposta 400
+		}
+
+		$usuario = $this->buscaUsuarioOu404($usuario_id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		// Grupos já atribuídos ao usuário. Retorna só os IDs já salvos
+		$gruposExistentes = $this->grupoUsuarioModel->where('usuario_id', $usuario->id)->findColumn('grupo_id');
+
+		// Validações extraídas
+		$erro = $this->validarGrupos($gruposExistentes, $dados['grupo_id']);
+		if ($erro) {
+			return $this->response
+				->setStatusCode($erro['status'])
+				->setJSON($erro['mensagem']);
+		}
+
+		// Se o usuário for um administrador, atribui o grupo de Administradores
+		// e remove os outros grupos, exceto o de Administradores
+		if (in_array(1, $dados['grupo_id'])) {
+
+			$grupoAdmin = [
+				'usuario_id' => $usuario->id,
+				'grupo_id' => 1 // ID do grupo de Administradores
+			];
+
+			$this->grupoUsuarioModel->insert($grupoAdmin);
+			$this->grupoUsuarioModel->where('usuario_id', $usuario->id)
+				->where('grupo_id !=', 1)
+				->delete();
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Grupo(s) salvo(s) com sucesso"
+				]);
+		}
+
+		// Rceberá os grupos do POST
+		$grupoPush = [];
+
+		// Filtar os grupos que já existem
+		// e só inserir os que não estão atribuídos ao usuário
+		foreach ($dados['grupo_id'] as $grupo) {
+
+			if (! in_array($grupo, $gruposExistentes)) {
+				$grupoPush[] = [
+					'usuario_id'     => $usuario->id,
+					'grupo_id' => $grupo
+				];
+			}
+		}
+
+		if ($this->grupoUsuarioModel->insertBatch($grupoPush)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Grupo(s) salvo(s) com sucesso"
+				]);
+		}
+
+
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar salvar os grupos do usuário',
+				'erros_model' => $this->grupoUsuarioModel->errors()
+			]);
+	}
+
+	public function removerGrupos($usuario_id = null, $grupo_usuario_id = null)
+	{
+
+		$usuario = $this->buscaUsuarioOu404($usuario_id);
+
+		if ($usuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $usuario; // Se já for a resposta 404, retorna direto
+		}
+
+		// Verifica se o grupo do usuário existe
+		$grupoUsuario = $this->buscaGrupoUsuarioOu404($grupo_usuario_id);
+
+		if ($grupoUsuario instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $grupoUsuario; // Se já for a resposta 404, retorna direto
+		}
+
+		if ($grupoUsuario->grupo_id == 2) {
+
+			return $this->response
+				->setStatusCode(403) // Forbidden
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => 'Não é permitida a exclusão do usuário do grupo de Pacientes.'
+				]);
+
+		}
+
+		if ($this->grupoUsuarioModel->delete($grupo_usuario_id)) {
+
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Grupo removido com sucesso"
+				]);
+		}
+
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao tentar excluir o grupo o usuário',
+				'erros_model' => $this->grupoUsuarioModel->errors()
+			]);
+
 	}
 
 	/**
@@ -371,6 +497,27 @@ class Usuarios extends BaseController
 		}
 
 		return $usuario;
+	}
+
+	/**
+	 * Recupera o grupo usuário pelo ID ou retorna resposta 404.
+	 *
+	 * @param int|null $id
+	 * @return object|\CodeIgniter\HTTP\ResponseInterface
+	 */
+	private function buscaGrupoUsuarioOu404($id = null)
+	{
+
+		if (!$id || !$grupo_usuario = $this->grupoUsuarioModel->find($id)) {
+			return $this->response
+				->setStatusCode(404)
+				->setJSON([
+					'status'  => 'error',
+					'message' => "Grupo do usuário não encontrado"
+				]);
+		}
+
+		return $grupo_usuario;
 	}
 
 	/**
@@ -409,4 +556,66 @@ class Usuarios extends BaseController
 
 		return $dados;
 	}
+
+	/**
+	 * Verifica se os grupos são válidos de acordo com as regras de negócio.
+	 * @param array $gruposExistentes
+	 * @param array $gruposNovos
+	 * @return array|null
+	 * Retorna null se for válido, ou um array com 'status' e 'mensagem' se inválido.
+	 */
+	private function validarGrupos(array $gruposExistentes, array $gruposNovos)
+	{
+
+		// Verifica se o array de grupos novos está vazio
+		if (empty($gruposNovos)) {
+			return [
+				'status'   => 400,
+				'mensagem' => [
+					'status' => 'error',
+					'mensagem' => 'Nenhum grupo foi informado para atribuir ao usuário.'
+				]
+			];
+		}
+
+		// Paciente já existente
+		// Quando o usuário é um paciente, não pode adicionar grupos
+		if (in_array(2, $gruposExistentes)) {
+			return [
+				'status'   => 403,
+				'mensagem' => [
+					'status' => 'error',
+					'mensagem' => 'Este usuário é um paciente. Não é permitido adicionar ou remover grupo.'
+				]
+			];
+		}
+
+		// Administrador já existente
+		// Quando o usuário é um administrador, não adiciona outros grupos
+		// informa que deve remover o grupo de Administradores para adicionar outros
+		if (in_array(1, $gruposExistentes)) {
+			return [
+				'status'   => 403,
+				'mensagem' => [
+					'status' => 'error',
+					'mensagem' => 'Este usuário já é um administrador. Remova este grupo do usuário para adicionar outros.'
+				]
+			];
+		}
+
+		// Não permitir atribuir grupo paciente
+		// Quando o usuário é um paciente, não pode adicionar grupos
+		if (in_array(2, $gruposNovos)) {
+			return [
+				'status'   => 403,
+				'mensagem' => [
+					'status' => 'error',
+					'mensagem' => 'Não é permitido adicionar o grupo paciente para este usuário.'
+				]
+			];
+		}
+
+		return null; // válido
+	}
+
 }
