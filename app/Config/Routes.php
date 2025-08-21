@@ -24,6 +24,10 @@ $routes->get('/', 'Home::index');
 /*********************** 
 * || Rotas API ||      * 
 ***********************/
+// ** Autenticação **
+// Login
+$routes->get('api/login', 'Login::index');
+
 // ** Usuários **
 // Listar todos os usuários
 $routes->get('api/usuarios', 'Usuarios::index');

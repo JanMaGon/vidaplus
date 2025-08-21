@@ -78,5 +78,16 @@ class UsuarioModel extends Model
         return $data;
 
     }
+
+	/**
+	* Método que recupera o usuário para logar na aplicação
+	* 
+	* @param string $email
+	* @return object|null
+	*/
+	public function buscaUsuarioPorEmail(string $email)
+	{
+		return $this->where('email', $email)->where('deletado_em', null)->first();
+	}
     
 }
