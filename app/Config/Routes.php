@@ -26,7 +26,7 @@ $routes->get('/', 'Home::index');
 ***********************/
 // ** Autenticação **
 // Login
-$routes->get('api/login', 'Login::index');
+$routes->post('api/login', 'Login::index');
 
 // ** Usuários **
 // Listar todos os usuários

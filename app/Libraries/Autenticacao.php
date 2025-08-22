@@ -7,11 +7,13 @@ class Autenticacao
 
 	private $usuario;
 	private $usuarioModel;
+	private $grupoUsuarioModel;
 
 	public function __construct()
 	{
 		
-		$this->usuarioModel = new \App\Models\UsuarioModel();
+		$this->usuarioModel      = new \App\Models\UsuarioModel();
+		$this->grupoUsuarioModel = new \App\Models\GrupoUsuarioModel();
 
 	}
 
@@ -38,6 +40,21 @@ class Autenticacao
 
 		// Tudo ok, usuário autenticado
 		return $usuario;
+	}
+
+	public function isAdmin($usuario_id = null) : bool 
+	{
+	
+		$grupoAdmin = 1; // ID do grupo Admin
+
+		$administrador = $this->grupoUsuarioModel->buscaGruposDoUsuario($grupoAdmin, $usuario_id);
+
+		if ($administrador == null) {
+			return false;
+		}
+
+		return true;
+
 	}
 	
 }

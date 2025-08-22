@@ -39,4 +39,19 @@ class GrupoUsuarioModel extends Model
 					->findAll();
 
 	}
+
+	/**
+	 * Método que recupera o grupo ao qual o usuário logado faz parte.
+	 * Importante: usado apenas para definir se é um paciente ou administrador.
+	 * 
+	 * @param int $grupo_id
+	 * @param int $usuario_id
+	 * @return object|null  
+	 */
+	public function buscaGruposDoUsuario($grupo_id, $usuario_id)
+	{
+		return $this->where('grupo_id', $grupo_id)
+					->where('usuario_id', $usuario_id)
+					->first();
+	}
 }
