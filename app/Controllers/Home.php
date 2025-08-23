@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Autenticacao;
-
 class Home extends BaseController
 {
 	public function index(): string
@@ -18,25 +16,30 @@ class Home extends BaseController
 		return $chave;
 	}
 
-	public function teste()
+	public function rotaProtegida()
 	{
-		$request = service('request');
+		$request = service('request'); 	// $request->user->id vem do filtro JWTFilter. Só é possivel acessar esse serviço de um controller
 
-		$autenticacao = new Autenticacao();
+		//$autenticacao = new Autenticacao(); // 1ª forma de usar o serviço
+		//$autenticacao = service('autenticacao'); // 2ª forma de usar o serviço
+		//$usuario = $autenticacao->pegaUsuarioLogado($request->user->id); // Pega o usuário logado
 
-		if ($autenticacao->isAdmin($request->user->id)) {
-			$dados = [
-				'status' => 'OK',
-				'mensagem' => 'Usuário é administrador.',
-				'usuario' => $request->user
-			];
-			return $this->response->setStatusCode(200)->setJSON($dados);
+		 // Se o ID do usuário não estiver no token
+		if (empty($request->user->id)) {
+			return $this->response->setStatusCode(400)->setJSON([
+				'status' => 'ERRO',
+				'mensagem' => 'ID do usuário não encontrado no token.'
+			]);
 		}
 
-		// Caso não seja admin, você pode retornar outra resposta
-		return $this->response->setStatusCode(403)->setJSON([
-			'status' => 'ERRO',
-			'mensagem' => 'Usuário não é administrador.'
-		]);
+		$dados = [
+			'status' => 'OK',
+			//'temPermissao' => $usuario->temPermissaoPara('listar-usuarios'), // Exemplo de verificação de permissao
+			'usuario' => usuario_logado($request->user->id), // usuario_logado() é um função do autenticacao_helper instanciado no basecontroller para ser usado em toda a aplicação
+			//'usuario' => $usuario // Outra forma de retornar o usuário
+		];
+		
+		return $this->response->setStatusCode(200)->setJSON($dados);
+		
 	}
 }

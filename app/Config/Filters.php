@@ -110,7 +110,7 @@ class Filters extends BaseFilters
 	public array $filters = [
 		'jwt' => [
 			'before' => [
-				'home/teste',
+				'home/rotaprotegida',
 			],
 		],
 	];
