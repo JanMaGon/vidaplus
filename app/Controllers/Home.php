@@ -2,8 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Traits\ValidacoesTrait;
 class Home extends BaseController
 {
+	use ValidacoesTrait;
+
 	public function index(): string
 	{
 		return view('welcome_message');
@@ -41,5 +44,17 @@ class Home extends BaseController
 		
 		return $this->response->setStatusCode(200)->setJSON($dados);
 		
+	}
+
+	public function cep()
+	{
+
+		$cep = "96412-600";
+
+		return $this->response->setStatusCode(200)->setJSON([
+			'cep' => $cep,
+			'valido' => $this->consultaViaCep($cep)
+		]);
+
 	}
 }

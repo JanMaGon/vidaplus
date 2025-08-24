@@ -19,6 +19,10 @@ class PermissaoSeeder extends Seeder
 			['nome' => 'criar-grupos'],
 			['nome' => 'editar-grupos'],
 			['nome' => 'excluir-grupos'],
+			['nome' => 'listar-pacientes'],
+			['nome' => 'criar-pacientes'],
+			['nome' => 'editar-pacientes'],
+			['nome' => 'excluir-pacientes'],
 		];
 
 		foreach ($permissoes as $permissao) {

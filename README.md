@@ -67,11 +67,14 @@ Antes de rodar o projeto, certifique-se de ter instalado:
   - writable/session
   - writable/uploads (se usar uploads)
 
-3. Crie o banco de dados, rode as migrations e seeders para criar a estrutura inicial do banco:
+3. IMPORTANTE: Crie o banco de dados, rode as migrations e seeders para criar a estrutura inicial do banco:
    ```bash
    php spark db:create vidaplus
    php spark migrate
    php spark db:seed UsuarioFakerSeeder
+   php spark db:seed GrupoSeeder
+   php spark db:seed PermissaoSeeder
+   php spark db:seed PacienteFakerSeeder
 
 ---
 

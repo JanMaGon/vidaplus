@@ -116,5 +116,35 @@ class UsuarioModel extends Model
 					->findAll();
 
 	}
+
+	/**
+	 * Método que atualiza o email do paciente na tabela de usuários
+	 * 
+	 * @param int $usuario_id
+	 * @param string $email
+	 * @return bool
+	 */
+	public function atualizaEmailPaciente(int $usuario_id, string $email)
+	{
+
+		return $this->protect(false)
+			 		->where('id', $usuario_id)
+			 		->set('email', $email)
+			 		->update();
+
+	}
+
+	/**
+	* Método que valida se o e-mail do paciente e único em usuário
+	* 
+	* @param string $email
+	* @return object|null
+	*/
+	public function validaEmailPaciente(int $usuario_id, string $email)
+	{
+		return $this->where('email', $email)
+                    ->where('id !=', $usuario_id)
+					->first();
+	}
     
 }

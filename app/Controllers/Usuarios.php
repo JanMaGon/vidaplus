@@ -3,8 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Entities\Usuario;
 use CodeIgniter\HTTP\ResponseInterface;
+
+use App\Entities\Usuario;
 
 class Usuarios extends BaseController
 {

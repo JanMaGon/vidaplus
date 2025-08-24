@@ -73,3 +73,20 @@ $routes->patch('api/grupo/(:num)', 'Grupos::atualizar/$1');
 $routes->delete('api/grupo/(:num)', 'Grupos::remover/$1');
 // Remover permissões de um grupo (DELETE)
 $routes->delete('api/grupo/(:num)/permissoes/(:num)/remover', 'Grupos::removerPermissoes/$1/$2');
+
+// ** Pacientes **
+// Listar todos os pacientes
+$routes->get('api/pacientes', 'Pacientes::index');
+// Pacientes deletados (soft delete)
+$routes->get('api/pacientes/deletados', 'Pacientes::lixeira');
+// Restaurar pacientes (GET)
+$routes->get('api/pacientes/restaurar/(:num)', 'Pacientes::restaurar/$1');
+// Exibir um paciente específico
+$routes->get('api/pacientes/(:num)', 'Pacientes::exibir/$1');
+// Criar paciente (POST)
+$routes->post('api/paciente', 'Pacientes::criar');
+// Atualizar paciente (PUT ou PATCH)
+$routes->put('api/paciente/(:num)', 'Pacientes::atualizar/$1');
+$routes->patch('api/paciente/(:num)', 'Pacientes::atualizar/$1');
+// Deletar paciente (DELETE)
+$routes->delete('api/paciente/(:num)', 'Pacientes::remover/$1');
