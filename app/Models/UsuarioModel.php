@@ -140,11 +140,18 @@ class UsuarioModel extends Model
 	* @param string $email
 	* @return object|null
 	*/
-	public function validaEmailPaciente(int $usuario_id, string $email)
+	public function validaEmailPaciente($usuario_id = null, string $email)
 	{
-		return $this->where('email', $email)
-                    ->where('id !=', $usuario_id)
-					->first();
+		if ($usuario_id === null) {
+
+			return $this->where('email', $email)->first();
+
+		} else {
+
+			return $this->where('email', $email)
+						->where('id !=', $usuario_id)
+						->first();
+		}
 	}
     
 }

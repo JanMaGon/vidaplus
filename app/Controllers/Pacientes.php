@@ -10,26 +10,26 @@ use App\Entities\Paciente;
 class Pacientes extends BaseController
 {
 
-    private $pacienteModel;
-    private $usuarioModel;
-    private $grupoUsuarioModel;
+	private $pacienteModel;
+	private $usuarioModel;
+	private $grupoUsuarioModel;
 
-    public function __construct()
-    {
-        $this->pacienteModel     = new \App\Models\PacienteModel();
-        $this->usuarioModel      = new \App\Models\UsuarioModel();
-        $this->grupoUsuarioModel = new \App\Models\GrupoUsuarioModel();
-    }
+	public function __construct()
+	{
+		$this->pacienteModel     = new \App\Models\PacienteModel();
+		$this->usuarioModel      = new \App\Models\UsuarioModel();
+		$this->grupoUsuarioModel = new \App\Models\GrupoUsuarioModel();
+	}
 
-    public function index()
-    {
-        
-        $atributos = [
+	public function index()
+	{
+
+		$atributos = [
 			'id',
 			'nome',
 			'cpf',
 			'email',
-            'deletado_em',
+			'deletado_em',
 		];
 
 		$pacientes = $this->pacienteModel->select($atributos)->findAll();
@@ -53,10 +53,9 @@ class Pacientes extends BaseController
 		];
 
 		return $this->response->setStatusCode(200)->setJSON($retorno);
+	}
 
-    }
-
-    public function exibir($id = null)
+	public function exibir($id = null)
 	{
 
 		$paciente = $this->buscaPacienteOu404($id);
@@ -74,7 +73,43 @@ class Pacientes extends BaseController
 		return $this->response->setStatusCode(200)->setJSON($dados);
 	}
 
-    public function atualizar($id = null)
+	public function criar()
+	{
+		$dados = $this->getRequestData();
+
+		if ($dados instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $dados; // JSON inválido, já retorna a resposta 400
+		}
+
+		// Cria um novo objeto da Entidade Paciente
+		$paciente = new Paciente($dados);
+
+		if ($this->pacienteModel->protect(false)->save($paciente)) {
+
+			$this->criaUsuarioParaPaciente($paciente);
+
+			// Retornamos junto com o status o último ID inserido
+			// Ou seja, o ID do paciente recém-criado
+			return $this->response
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Paciente criado com sucesso",
+					'id' => $this->pacienteModel->getInsertID()
+				]);
+		}
+
+		// Alguma validação falhou
+		return $this->response
+			->setStatusCode(500) // Erro interno do servidor
+			->setJSON([
+				'status' => 'error',
+				'mensagem' => 'Erro ao criar o paciente',
+				'erros_model' => $this->pacienteModel->errors()
+			]);
+	}
+
+	public function atualizar($id = null)
 	{
 		$dados = $this->getRequestData();
 
@@ -103,40 +138,28 @@ class Pacientes extends BaseController
 				]);
 		}
 
-        // Verifica se o e-mail existe em Usuários
-        if ($this->usuarioModel->validaEmailPaciente($paciente->usuario_id, $paciente->email)) {
-
-            return $this->response
-                        ->setStatusCode(422) // Unprocessable Entity
-                        ->setJSON([
-                            'status' => 'error',
-                            'mensagem' => 'O e-mail informado já existe em outro usuário. Informe outro e-mail.'
-                        ]);
-                        
-        }
 
 		if ($this->pacienteModel->save($paciente)) {
 
-            if ($paciente->hasChanged('email')) {
+			if ($paciente->hasChanged('email')) {
 
-                $this->usuarioModel->atualizaEmailPaciente($paciente->usuario_id, $paciente->email);
+				$this->usuarioModel->atualizaEmailPaciente($paciente->usuario_id, $paciente->email);
 
-                return $this->response
-                            ->setStatusCode(200)
-                            ->setJSON([
-                                'status' => 'OK',
-                                'mensagem' => "Paciente atualizado com sucesso. IMPORTANTE: informe ao paciente o novo e-mail de acesso ao sistema.",                                
-                                'novo_email' => $paciente->email,
-                            ]);
-
-            }
+				return $this->response
+					->setStatusCode(200)
+					->setJSON([
+						'status' => 'OK',
+						'mensagem' => "Paciente atualizado com sucesso. IMPORTANTE: informe ao paciente o novo e-mail de acesso ao sistema.",
+						'novo_email' => $paciente->email,
+					]);
+			}
 
 			return $this->response
-                        ->setStatusCode(200)
-                        ->setJSON([
-                            'status' => 'OK',
-                            'mensagem' => "Paciente atualizado com sucesso"
-                        ]);
+				->setStatusCode(200)
+				->setJSON([
+					'status' => 'OK',
+					'mensagem' => "Paciente atualizado com sucesso"
+				]);
 		}
 
 		// Alguma validação falhou
@@ -149,7 +172,7 @@ class Pacientes extends BaseController
 			]);
 	}
 
-    /**
+	/**
 	 * Recupera o paciente pelo ID ou retorna resposta 404.
 	 *
 	 * @param int|null $id
@@ -170,7 +193,7 @@ class Pacientes extends BaseController
 		return $paciente;
 	}
 
-    /**
+	/**
 	 * Lê dados enviados via JSON.
 	 *
 	 * @return array|\CodeIgniter\HTTP\ResponseInterface
@@ -205,5 +228,46 @@ class Pacientes extends BaseController
 		}
 
 		return $dados;
+	}
+
+	/**
+	 * Cria um usuário para o paciente recém-criado.
+	 *
+	 * A senha padrão será os 6 primeiros dígitos do CPF.
+	 *
+	 * @param object $paciente Objeto paciente recém-criado
+	 * @return void
+	 */
+	private function criaUsuarioParaPaciente($paciente)
+	{
+		// Remove tudo que não for número
+		$cpfNumerico = preg_replace('/\D/', '', $paciente->cpf); // "11111111111"
+
+		// Pega os 6 primeiros dígitos
+		$senhaPadrao = substr($cpfNumerico, 0, 6); // "111111"
+
+		$usuario = [
+			'nome'          => $paciente->nome,
+			'email'         => $paciente->email,
+			'password'      => $senhaPadrao,
+			'ativo'         => true,
+		];
+
+		// Criar o usuário
+		$this->usuarioModel->skipValidation(true)->protect(false)->insert($usuario);
+
+		$grupoUsuario = [
+			'usuario_id' => $this->usuarioModel->getInsertID(),
+			'grupo_id'   => 2, // Pacientes
+		];
+
+		// Associar o usuário ao grupo de pacientes
+		$this->grupoUsuarioModel->protect(false)->insert($grupoUsuario);
+
+		// Atualizar o paciente com o ID do usuário criado
+		$this->pacienteModel->protect(false)
+			->where('id', $this->pacienteModel->getInsertID())
+			->set('usuario_id', $this->usuarioModel->getInsertID())
+			->update();
 	}
 }

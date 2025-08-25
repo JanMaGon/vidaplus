@@ -35,6 +35,7 @@ class PacienteModel extends Model
 		'id'           => 'permit_empty|is_natural_no_zero',
 		'nome'         => 'required|min_length[3]|max_length[125]',
 		'email'        => 'required|valid_email|max_length[125]|is_unique[pacientes.email,id,{id}]', // Não pode ter espaços
+		'email'        => 'is_unique[usuarios.email,id,{id}]', // Também validamos se o email já existe na tabela usuários
 		'cpf'          => 'required|exact_length[14]|validaCPF|is_unique[pacientes.cpf,id,{id}]',
 		'telefone'     => 'required|max_length[15]|is_unique[pacientes.telefone,id,{id}]',
 		'cep'          => 'required|exact_length[9]'
@@ -49,12 +50,13 @@ class PacienteModel extends Model
 			'required'   => 'O campo email é obrigatório. Não pode ser vazio.',
 			'valid_email' => 'O campo email deve conter um endereço de email válido.',
 			'max_length' => 'O campo email não pode ter mais de 230 caracteres.',
-			'is_unique' => 'Já existe um paciente cadastrado com este email.'
+			'is_unique' => 'Este email já está em uso.'
 		],
 		'cpf' => [
 			'required'   => 'O campo cpf é obrigatório. Não pode ser vazio.',
-			'exact_length' => 'O campo email deve conter 14 caracteres.',
-			'is_unique' => 'Já existe um paciente cadastrado com este cpf.'
+			'exact_length' => 'O campo cpf deve conter 14 caracteres.',
+			'is_unique' => 'Já existe um paciente cadastrado com este cpf.',
+			'validaCPF' => 'O CPF informado é inválido.'
 		],
 		'telefone' => [
 			'required'   => 'O campo telefone é obrigatório. Não pode ser vazio.',
