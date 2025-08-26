@@ -90,3 +90,9 @@ $routes->put('api/paciente/(:num)', 'Pacientes::atualizar/$1');
 $routes->patch('api/paciente/(:num)', 'Pacientes::atualizar/$1');
 // Deletar paciente (DELETE)
 $routes->delete('api/paciente/(:num)', 'Pacientes::remover/$1');
+
+// ** LOGS **
+// Lista datas disponíveis para visualizar os logs
+$routes->get('api/logs', 'Logs::index');
+//Consultar log (POST)
+$routes->post('api/logs/consultar', 'Logs::consultar');

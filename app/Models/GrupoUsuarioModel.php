@@ -54,4 +54,11 @@ class GrupoUsuarioModel extends Model
 					->where('usuario_id', $usuario_id)
 					->first();
 	}
+
+	public function verificaUsuarioPaciente($usuario_id)
+	{
+		
+		return $this->where('usuario_id', $usuario_id)->first();
+
+	}
 }

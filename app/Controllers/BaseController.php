@@ -75,6 +75,6 @@ abstract class BaseController extends Controller
             'ip_address' => $this->request->getIPAddress(),
         ];
 
-        log_message('info', "[ACAO-USUARIO-ID-{id}] Usuário: {nome} | $texto | com o {email} e com IP {ip_address}", $info);
+        log_message('info', "[ACAO-USUARIO-ID-{id}] Usuário: {nome} | $texto | com o e-mail {email} e com IP {ip_address}", $info);
     }
 }

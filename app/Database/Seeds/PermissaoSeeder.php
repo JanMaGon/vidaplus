@@ -23,6 +23,7 @@ class PermissaoSeeder extends Seeder
 			['nome' => 'criar-pacientes'],
 			['nome' => 'editar-pacientes'],
 			['nome' => 'excluir-pacientes'],
+			['nome' => 'visualizar-logs'],
 		];
 
 		foreach ($permissoes as $permissao) {
