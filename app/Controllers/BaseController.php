@@ -55,4 +55,26 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
     }
+
+    /**
+     * Registra uma ação do usuário no log de atividades.
+     *
+     * @param string $texto Ação realizada pelo usuário.
+     * @return void
+     */
+    protected function registraAcaoDoUsuario(string $texto, int $usuario_id)
+    {
+
+        $usuario = usuario_logado($usuario_id); // Pega o usuário logado
+
+        // Gera mensagem como: Usuário 123 logou no sistema com IP 127.0.0.1
+        $info = [
+            'id'         => $usuario->id,
+            'nome'       => $usuario->nome,
+            'email'      => $usuario->email,
+            'ip_address' => $this->request->getIPAddress(),
+        ];
+
+        log_message('info', "[ACAO-USUARIO-ID-{id}] Usuário: {nome} | $texto | com o {email} e com IP {ip_address}", $info);
+    }
 }

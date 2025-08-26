@@ -33,6 +33,9 @@ class Login extends BaseController
 				]);
         }
 
+		// Registra ação do usuário no log de atividades
+		$this->registraAcaoDoUsuario('Logou na aplicação', $usuario->id);
+
 		// Pegamos a chave secreta do JWT
         $key = getenv('JWT_SECRET');
 

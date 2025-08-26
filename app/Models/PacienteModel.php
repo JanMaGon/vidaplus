@@ -8,7 +8,7 @@ class PacienteModel extends Model
 {
     protected $table            = 'pacientes';
     protected $returnType       = \App\Entities\Paciente::class;
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $allowedFields    = [
         'usuario_id',
         'nome',

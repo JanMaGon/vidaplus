@@ -39,7 +39,7 @@ class Logger extends BaseConfig
      *
      * @var int|list<int>
      */
-    public $threshold = (ENVIRONMENT === 'production') ? 4 : 9;
+    public $threshold = [4, 7];
 
     /**
      * --------------------------------------------------------------------------
@@ -49,7 +49,7 @@ class Logger extends BaseConfig
      * Each item that is logged has an associated date. You can use PHP date
      * codes to set your own date formatting
      */
-    public string $dateFormat = 'Y-m-d H:i:s';
+    public string $dateFormat = 'd-m-Y H:i:s';
 
     /**
      * --------------------------------------------------------------------------

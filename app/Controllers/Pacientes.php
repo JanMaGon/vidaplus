@@ -91,22 +91,22 @@ class Pacientes extends BaseController
 			// Retornamos junto com o status o último ID inserido
 			// Ou seja, o ID do paciente recém-criado
 			return $this->response
-				->setStatusCode(200)
-				->setJSON([
-					'status' => 'OK',
-					'mensagem' => "Paciente criado com sucesso",
-					'id' => $this->pacienteModel->getInsertID()
-				]);
+						->setStatusCode(200)
+						->setJSON([
+							'status' => 'OK',
+							'mensagem' => "Paciente criado com sucesso",
+							'id' => $this->pacienteModel->getInsertID()
+						]);
 		}
 
 		// Alguma validação falhou
 		return $this->response
-			->setStatusCode(500) // Erro interno do servidor
-			->setJSON([
-				'status' => 'error',
-				'mensagem' => 'Erro ao criar o paciente',
-				'erros_model' => $this->pacienteModel->errors()
-			]);
+					->setStatusCode(500) // Erro interno do servidor
+					->setJSON([
+						'status' => 'error',
+						'mensagem' => 'Erro ao criar o paciente',
+						'erros_model' => $this->pacienteModel->errors()
+					]);
 	}
 
 	public function atualizar($id = null)
@@ -130,12 +130,14 @@ class Pacientes extends BaseController
 		$paciente->fill($dados);
 
 		if ($paciente->hasChanged() === false) {
+
 			return $this->response
-				->setStatusCode(200)
-				->setJSON([
-					'status' => 'OK',
-					'mensagem' => 'Nenhum dado foi modificado'
-				]);
+						->setStatusCode(200)
+						->setJSON([
+							'status' => 'OK',
+							'mensagem' => 'Nenhum dado foi modificado'
+						]);
+
 		}
 
 
@@ -146,20 +148,21 @@ class Pacientes extends BaseController
 				$this->usuarioModel->atualizaEmailPaciente($paciente->usuario_id, $paciente->email);
 
 				return $this->response
-					->setStatusCode(200)
-					->setJSON([
-						'status' => 'OK',
-						'mensagem' => "Paciente atualizado com sucesso. IMPORTANTE: informe ao paciente o novo e-mail de acesso ao sistema.",
-						'novo_email' => $paciente->email,
-					]);
+							->setStatusCode(200)
+							->setJSON([
+								'status' => 'OK',
+								'mensagem' => "Paciente atualizado com sucesso. IMPORTANTE: informe ao paciente o novo e-mail de acesso ao sistema.",
+								'novo_email' => $paciente->email,
+							]);
 			}
 
 			return $this->response
-				->setStatusCode(200)
-				->setJSON([
-					'status' => 'OK',
-					'mensagem' => "Paciente atualizado com sucesso"
-				]);
+						->setStatusCode(200)
+						->setJSON([
+							'status' => 'OK',
+							'mensagem' => "Paciente atualizado com sucesso"
+						]);
+
 		}
 
 		// Alguma validação falhou
@@ -172,6 +175,137 @@ class Pacientes extends BaseController
 			]);
 	}
 
+	public function remover($id = null)
+	{
+
+		$paciente = $this->buscaPacienteOu404($id);
+
+		if ($paciente instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $paciente; // Se já for a resposta 404, retorna direto
+		}
+
+		if ($paciente->deletado_em != null) {
+
+			return $this->response
+						->setStatusCode(400)
+						->setJSON([
+							'status' => 'error',
+							'mensagem' => "Esse paciente já encontra-se excluído"
+						]);
+
+		}
+
+		if ($this->pacienteModel->delete($paciente->id)) {
+
+			$usuario = [
+				'id'    => $paciente->usuario_id,
+				'ativo' => false,
+			];
+
+			// Desativa o usuário do paciente
+			$this->usuarioModel->skipValidation(true)->protect(false)->save($usuario);
+
+			// Deleta o usuário do paciente
+			$this->usuarioModel->delete($paciente->usuario_id);
+
+			return $this->response
+						->setStatusCode(200)
+						->setJSON([
+							'status' => 'OK',
+							'mensagem' => "Paciente excluído com sucesso"
+						]);
+				
+		}
+
+		return $this->response
+					->setStatusCode(500) // Erro interno do servidor
+					->setJSON([
+						'status' => 'error',
+						'mensagem' => 'Erro ao tentar excluir o usuário'
+					]);
+	}
+
+	public function lixeira()
+	{
+		$atributos = [
+			'id',
+			'nome',
+			'cpf',
+			'email',
+		];
+
+		// Busca apenas os registros que são soft deleted
+		$pacientes = $this->pacienteModel
+						  ->onlyDeleted()
+						  ->select($atributos)
+						  ->findAll();
+
+		$data = [];
+
+		foreach ($pacientes as $paciente) {
+			$data[] = [
+				'id'    => (int) $paciente->id,
+				'nome'  => esc($paciente->nome),
+				'cpf'   => esc($paciente->cpf),
+				'email' => esc($paciente->email),
+			];
+		}
+
+		$retorno = [
+			'data' => $data,
+		];
+
+		return $this->response->setStatusCode(200)->setJSON($retorno);
+
+	}
+
+	public function restaurar($id = null)
+	{
+
+		$paciente = $this->buscaPacienteOu404($id);
+
+		if ($paciente instanceof \CodeIgniter\HTTP\ResponseInterface) {
+			return $paciente; // Se já for a resposta 404, retorna direto
+		}
+
+		if ($paciente->deletado_em == null) {
+			return $this->response
+				->setStatusCode(400)
+				->setJSON([
+					'status' => 'error',
+					'mensagem' => "Apenas pacientes excluídos podem ser restaurados"
+				]);
+		}
+
+		$paciente->deletado_em = null; // Limpa o campo de exclusão
+
+		if ($this->pacienteModel->protect(false)->save($paciente)) {
+
+			$usuario = [
+				'id'    => $paciente->usuario_id,
+				'deletado_em' => null,
+				'ativo' => true,
+			];
+
+			// Restaura e reativa o usuário do paciente
+			$this->usuarioModel->skipValidation(true)->protect(false)->save($usuario);
+
+			return $this->response
+						->setStatusCode(200)
+						->setJSON([
+							'status' => 'OK',
+							'mensagem' => "Paciente restaurado com sucesso"
+						]);
+		}
+
+		return $this->response
+					->setStatusCode(500) // Erro interno do servidor
+					->setJSON([
+						'status' => 'error',
+						'mensagem' => 'Erro ao tentar restaurar o usuário'
+					]);
+	}
+
 	/**
 	 * Recupera o paciente pelo ID ou retorna resposta 404.
 	 *
@@ -182,12 +316,14 @@ class Pacientes extends BaseController
 	{
 
 		if (!$id || !$paciente = $this->pacienteModel->withDeleted(true)->find($id)) {
+
 			return $this->response
-				->setStatusCode(404) // Not Found
-				->setJSON([
-					'status'  => 'error',
-					'message' => "Não encontramos o paciente"
-				]);
+						->setStatusCode(404) // Not Found
+						->setJSON([
+							'status'  => 'error',
+							'message' => "Não encontramos o paciente"
+						]);
+
 		}
 
 		return $paciente;
@@ -209,22 +345,26 @@ class Pacientes extends BaseController
 		if (stripos($contentType, 'application/json') === false) {
 			// Retorna erro se não for JSON
 			return $this->response
-				->setStatusCode(415) // 415 Unsupported Media Type
-				->setJSON([
-					'status' => 'erro',
-					'mensagem' => 'Formato inválido. Envie os dados como JSON.'
-				]);
+						->setStatusCode(415) // 415 Unsupported Media Type
+						->setJSON([
+							'status' => 'erro',
+							'mensagem' => 'Formato inválido. Envie os dados como JSON.'
+						]);
 		}
 
 		try {
+
 			$dados = $this->request->getJSON(true); // retorna array
+
 		} catch (\Exception $e) {
+
 			return $this->response
-				->setStatusCode(400) // JSON inválido
-				->setJSON([
-					'status' => 'erro',
-					'mensagem' => 'JSON inválido'
-				]);
+						->setStatusCode(400) // JSON inválido
+						->setJSON([
+							'status' => 'erro',
+							'mensagem' => 'JSON inválido'
+						]);
+
 		}
 
 		return $dados;
@@ -266,8 +406,9 @@ class Pacientes extends BaseController
 
 		// Atualizar o paciente com o ID do usuário criado
 		$this->pacienteModel->protect(false)
-			->where('id', $this->pacienteModel->getInsertID())
-			->set('usuario_id', $this->usuarioModel->getInsertID())
-			->update();
+							->where('id', $this->pacienteModel->getInsertID())
+							->set('usuario_id', $this->usuarioModel->getInsertID())
+							->update();
+
 	}
 }
