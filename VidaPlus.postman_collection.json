@@ -984,13 +984,45 @@
 			"name": "Logs",
 			"item": [
 				{
+					"name": "ListarDatasLogs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Lista as datas disponíveis para consultar os logs",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/logs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "ConsultarLogs",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    // usuários que pertencem ao grupo Pacientes não retornam logs\r\n    \"data_escolhida\":\"2025-08-26\", // formato YYYY-M-D\r\n    \"usuario_id\":\"2\"\r\n}",
+							"raw": "{\r\n    // usuários que pertencem ao grupo Pacientes não retornam logs\r\n    \"data_escolhida\":\"\", // formato YYYY-M-D\r\n    \"usuario_id\":\"\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1012,28 +1044,9 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "ListarDatasLogs",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost/vidaplus/api/logs",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"path": [
-								"vidaplus",
-								"api",
-								"logs"
-							]
-						}
-					},
-					"response": []
 				}
-			]
+			],
+			"description": "ListaDatasLogs: GET **/api/logs**  \nObjetivo: lista as datas disponíveis para consultar os logs\n\n---\n\nConsultarLogs: POST **/api/logs/consultar**  \nObjetivo: consulta os logs de um usuário pela data"
 		}
 	]
 }
