@@ -319,7 +319,7 @@ class Usuarios extends BaseController
 
 		foreach ($usuario->grupos as $grupo) {
 			$pertence[] = [
-				'id' => (int) $grupo->id,
+				'grupos_usuarios_id' => (int) $grupo->id,
 				'grupo_id'    => (int) $grupo->grupo_id,
 				'nome'  => esc($grupo->nome),
 				'descricao'  => esc($grupo->nome),
@@ -431,7 +431,7 @@ class Usuarios extends BaseController
 				'erros_model' => $this->grupoUsuarioModel->errors()
 			]);
 	}
-
+	
 	public function removerGrupos($usuario_id = null, $grupo_usuario_id = null)
 	{
 

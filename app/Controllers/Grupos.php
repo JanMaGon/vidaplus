@@ -339,7 +339,7 @@ class Grupos extends BaseController
 
 			foreach ($grupo->permissoes as $permissao) {
 				$possui[] = [
-					'id' => (int) $permissao->id,
+					'grupos_permissoes_id' => (int) $permissao->id,
 					'permissao_id'    => (int) $permissao->permissao_id,
 					'nome'  => esc($permissao->nome),
 				];

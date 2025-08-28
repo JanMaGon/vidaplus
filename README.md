@@ -12,6 +12,7 @@
 - [Instalação](#instalação)  
 - [Configuração](#configuração)  
 - [Estrutura Importante](#estrutura-importante)  
+- [Postman](#postman)  
 - [Considerações Finais](#considerações-finais)  
 
 ---
@@ -89,6 +90,13 @@ writable/ → Pasta para cache, logs, sessões, uploads — necessária para gra
 vendor/ → Dependências do Composer (não versionado no Git)
 
 spark → CLI do CodeIgniter para manutenção e comandos (migrations, seeders etc.)
+
+---
+
+## Postman
+
+Na raíz do projeto está disponível o arquivo VidaPlus.postman_collection.json para testar as rotas da API.
+Importe este arquivo para o seu Postman.
 
 ---
 

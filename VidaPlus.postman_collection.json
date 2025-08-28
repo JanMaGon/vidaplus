@@ -1,0 +1,1039 @@
+{
+	"info": {
+		"_postman_id": "9f49f6dc-d8a2-407a-be8f-0c21b7105618",
+		"name": "VidaPlus",
+		"description": "## **CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS**\n\n### **Projeto: Desenvolvimento Beck-end**\n\n**Janise Machado Gonçalves**\n\n**RU: 4468043**\n\n#### **API RESTful VidaPlus.**\n\n---\n\nNesta Collection estão todos os endpoint que foram desenvlvidos para a api.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47545765",
+		"_collection_link": "https://janise83-493147.postman.co/workspace/Janise-Machado's-Workspace~37f670ee-e4f9-465d-8707-9b2ad95d65ec/collection/47545765-9f49f6dc-d8a2-407a-be8f-0c21b7105618?action=share&source=collection_link&creator=47545765"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "ListaUsuarios",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ExibeUsuario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuarios/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuarios",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UsuariosDeletados",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuarios/deletados",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuarios",
+								"deletados"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RestauraUsuario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuarios/restaurar/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuarios",
+								"restaurar",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UsuarioGrupo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuarios/{usuario_id}/grupos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuarios",
+								"{usuario_id}",
+								"grupos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarUsuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"email\":\"\",\r\n    \"ativo\":\"\",\r\n    \"password\":\"\",\r\n    \"password_confirmation\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarUsuario",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"email\":\"\",\r\n    \"ativo\":\"\",\r\n    \"password\":\"\",\r\n    \"password_confirmation\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarUsuario",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"email\":\"\",\r\n    \"ativo\":\"\",\r\n    \"password\":\"\",\r\n    \"password_confirmation\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SalvarGrupos",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"grupo_id\": [] // [1,2,3]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario/{usuario_id}/grupos/salvar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario",
+								"{usuario_id}",
+								"grupos",
+								"salvar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarUsuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarGrupoUsuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {usuario_id} - id do usuário. \r\n// {grupo_usuario_id} - id do registro na tabela grupos_usuarios. \r\n// grupo_usuario_id você pode encontrar na rota /api/usuarios/{usuario_id}/grupos, no atributo grupos_usuarios_id. \r\n// Os parâmetros devem ser passados por url. \r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/usuario/{usuario_id}/grupos/{grupo_usuario_id}/remover",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"usuario",
+								"{usuario_id}",
+								"grupos",
+								"{grupo_usuario_id}",
+								"remover"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "ListaUsuarios: GET **/api/usuarios**  \nObjetivo: listar todos os usuários cadastrados\n\n---\n\nExibeUsuario: GET **/api/usuarios/{id}**  \nObjetivo: mostra um usuário específico  \nParâmetro: {id} - id do usuário deve ser passado por url\n\n---\n\nUsuariosDeletados: GET **/api/usuarios/deletados**  \nObjetivo: lista todos os usuários deletados\n\n---\n\nRestauraUsuario: GET **/api/usuarios/restaurar/{id}**  \nObjetivo: restaura usuário deletado  \nParâmetro: {id} - id do usuário deve ser passado por url\n\n---\n\nUsuarioGrupo: GET **/api/usuarios/{id}/grupos**  \nObjetivo: lsita os grupos que o usuário pertence e os que ele não pertence  \nParâmetro: {id} - id do usuário deve ser passado por url\n\n---\n\nCriaUsuario: POST **/api/usuarios**  \nObjetivo: cadastra um novo usuário\n\n---\n\nAtualizarUsuario: PUT **/api/usuario/{id}**  \nObjetivo: edita um usuário cadastrado\n\n---\n\nSalvarGrupos: POST **/api/usuario/{usuario_id}/grupos/salvar**  \nObjetivo: adiciona grupos ao usuário\n\n---\n\nDeletarUsuario: DELETE **/api/usuario/{id}**  \nObjetivo: exclui um usuário  \nParâmetro: {id} - id do usuário deve ser passado por url\n\n---\n\nDeletarGrupoUsuario: DELETE **/api/usuario/{usuario_id}/grupos/{grupo_usuario_id}/remover**\n\nObjetivo: remove grupo de um usuário"
+		},
+		{
+			"name": "Grupos",
+			"item": [
+				{
+					"name": "ListaGrupos",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ExibeGrupo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupos/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupos",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GruposDeletados",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupos/deletados",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupos",
+								"deletados"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RestauraGrupo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupos/restaurar/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupos",
+								"restaurar",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListaPermissoes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo/{grupo_id}/permissoes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo",
+								"{grupo_id}",
+								"permissoes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarGrupo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"descricao\":\"\",\r\n    \"exibir\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarGrupo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"descricao\":\"\",\r\n    \"exibir\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SalvarPermissoes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // para saber o id das permissões execute o endpoint ListaPermissoes\r\n    // nele vai ser listado as permissões que o grupo ainda não possui. O atributo id é o que você precisa.\r\n    \"permissao_id\": [] // [3,5]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo/{grupo_id}/permissoes/salvar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo",
+								"{grupo_id}",
+								"permissoes",
+								"salvar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarGrupo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarPermissao",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {grupo_id} - id do grupo. \r\n// {grupo_permissao_id} - id do registro na tabela grupos_permissoes. \r\n// grupo_permissao_id você pode encontrar na rota /api/grupo/{grupo_id}/permissoes, no atributo grupos_permissoes_id. \r\n// Os parâmetros devem ser passados por url.",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/grupo/{grupo_id}/permissoes/{grupo_permissao_id}/remover",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"grupo",
+								"{grupo_id}",
+								"permissoes",
+								"{grupo_permissao_id}",
+								"remover"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "ListaGrupos: GET **/api/grupos**  \nObjetivo: listar todos os grupos cadastrados\n\n---\n\nExibeUsuario: GET **/api/grupos/{id}**  \nObjetivo: mostra um grupo específico  \nParâmetro: {id} - id do grupo deve ser passado por url\n\n---\n\nGruposDeletados: GET **/api/grupos/deletados**  \nObjetivo: lista todos os grupos deletados\n\n---\n\nRestauraGrupo: GET **/api/grupos/restaurar/{id}**  \nObjetivo: restaura grupo deletado  \nParâmetro: {id} - id do grupo deve ser passado por url\n\n---\n\nListaPermissoes: GET **/api/grupo/{grupo_id}/permissoes**  \nObjetivo: lista as permissões que o grupo possui e as que ele não possui  \nParâmetro: {id} - id do grupo deve ser passado por url\n\n---\n\nCriaGrupo: POST **/api/grupo**  \nObjetivo: cadastra um novo grupo\n\n---\n\nAtualizarGrupo: PUT **/api/grupo/{id}**  \nObjetivo: edita um grupo cadastrado\n\n---\n\nSalvarPermissoes: POST **/api/grupo/{grupo_id}/permissoes/salvar**  \nObjetivo: adiciona permissões a um grupo\n\n---\n\nDeletarUsuario: DELETE **/api/grupo/{id}**  \nObjetivo: exclui um usuário  \nParâmetro: {id} - id do usuário deve ser passado por url\n\n---\n\nDeletarPermissao: DELETE **/api/grupo/{grupo_id}/permissoes/{grupo_permissao_id}/remover**\n\nObjetivo: remove a permissão e um grupo"
+		},
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"maria.c@gmail.com\",\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RotaProtegida",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L3ZpZGFwbHVzLyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3QvdmlkYXBsdXMvIiwiaWF0IjoxNzU1OTg3MjQ3LCJleHAiOjE3NTU5OTA4NDcsImRhdGEiOnsiaWQiOiI1IiwiZW1haWwiOiJ3cm9kcmlndWV6QHdlYmVyLmJpeiJ9fQ.zm7NM0eYwaH0kYWuYtx7zb2BzlkVnJHb6LSw5dBHJpA",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// Esta rota é um exemplo de como a api vai funcionar quando o filtro JWT for aplicado. \r\n// Depois que a rota /api/login for executada copie o token gerado e adicione na requisição desta rota. \r\n// Sem o token a rota não pode ser acessada. \r\n// Esta rota retorna um exemplo de como a api vai resgatar os dados do usuário logado quando o cliente da api enviar o token no header da requisição. \r\n// Headers para fazer este teste. A resposta esperada não é enviada para o cliente da API e sim utilizada internamente. \r\n\r\n// Parâmetros(em Headers):  \r\n// Key: Authorization \r\n// Value: Bearer SEU_TOKEN_DE_LOGIN",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/home/rotaprotegida",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"home",
+								"rotaprotegida"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Login: POST **/api/pacientes**  \nObjetivo: valida credenciais do usuário\n\n---\n\nRtoaProtegina: GET **/api/home/rotaprotegida**  \nObjetivo: esta rota é um exemplo de como a api vai funcionar quando o filtro JWT for aplicado. Depois que a rota /api/login for executada copie o token gerado e adicione na requisição desta rota. Sem o token a rota não pode ser acessada. Esta rota retorna um exemplo de como a api vai resgatar os dados do usuário logado quando o cliente da api enviar o token no header da requisição. No Postman utilize Headers para fazer este teste. A resposta esperada não é enviada para o cliente da API e sim utilizada internamente.   \n  \nParâmetros(em Headers):    \nKey: Authorization   \nValue: Bearer SEU_TOKEN_DE_LOGIN"
+		},
+		{
+			"name": "Pacientes",
+			"item": [
+				{
+					"name": "ListaPacientes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/pacientes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"pacientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ExibePaciente",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost/vidaplus/api/pacientes/{id}",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"pacientes",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PacientesDeletados",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/pacientes/deletados",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"pacientes",
+								"deletados"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RestauraPaciente",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/pacientes/restaurar/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"pacientes",
+								"restaurar",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarPaciente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"cpf\":\"\", // formato 111.111.111-11\r\n    \"data_nascimento\":\"\", // formato YYYY-M-D\r\n    \"telefone\":\"\", // formato (99)99999-9999 ou (99)9999-9999\r\n    \"email\":\"\",\r\n    \"cep\":\"\", // formato 99999-999\r\n    \"endereco\":\"\",\r\n    \"numero\":\"\",\r\n    \"bairro\":\"\",\r\n    \"cidade\":\"\",\r\n    \"estado\":\"\" // formato AA\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/paciente",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"paciente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarPaciente",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\":\"\",\r\n    \"cpf\":\"\", // formato 111.111.111-11\r\n    \"data_nascimento\":\"\", // formato YYYY-M-D\r\n    \"telefone\":\"\", // formato (99)99999-9999 ou (99)9999-9999\r\n    \"email\":\"\",\r\n    \"cep\":\"\", // formato 99999-999\r\n    \"endereco\":\"\",\r\n    \"numero\":\"\",\r\n    \"bairro\":\"\",\r\n    \"cidade\":\"\",\r\n    \"estado\":\"\" // formato AA\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/paciente/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"paciente",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarPaciente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/paciente/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"paciente",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "ListaPacientes: GET **/api/pacientes**  \nObjetivo: listar todos os pacientes cadastrados\n\n---\n\nExibePaciente: GET **/api/pacientes/{id}**  \nObjetivo: mostra um paciente específico  \nParâmetro: {id} - id do paciente deve ser passado por url\n\n---\n\nPacientesDeletados: GET **/api/pacientes/deletados**  \nObjetivo: lista todos os pacientes deletados\n\n---\n\nRestauraPaciente: GET **/api/pacientes/restaurar/{id}**  \nObjetivo: restaura paciente deletado  \nParâmetro: {id} - id do paciente deve ser passado por url\n\n---\n\nCriaPaciente: POST **/api/paciente**  \nObjetivo: cadastra um novo paciente\n\n---\n\nAtualizarPaciente: PUT **/api/paciente/{id}**  \nObjetivo: edita um paciente cadastrado\n\n---\n\nDeletarPaciente: DELETE **/api/paciente/{id}**  \nObjetivo: exclui um paciente  \nParâmetro: {id} - id do paciente deve ser passado por url"
+		},
+		{
+			"name": "Logs",
+			"item": [
+				{
+					"name": "ConsultarLogs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // usuários que pertencem ao grupo Pacientes não retornam logs\r\n    \"data_escolhida\":\"2025-08-26\", // formato YYYY-M-D\r\n    \"usuario_id\":\"2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/vidaplus/api/logs/consultar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"logs",
+								"consultar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarDatasLogs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/vidaplus/api/logs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"vidaplus",
+								"api",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
